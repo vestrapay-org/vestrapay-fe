@@ -32,7 +32,9 @@ export function useTransactionPoller({
         onSettledRef.current(status);
         return true;
       }
-    } catch {}
+    } catch {
+      return false;
+    }
 
     return false;
   }, [reference]);
@@ -41,7 +43,6 @@ export function useTransactionPoller({
     if (!enabled || !reference) return;
 
     attemptsRef.current = 0;
-    let timer: ReturnType<typeof setInterval>;
     let cancelled = false;
 
     const tick = async () => {
@@ -54,7 +55,7 @@ export function useTransactionPoller({
       }
     };
 
-    timer = setInterval(() => void tick(), intervalMs);
+    const timer: ReturnType<typeof setInterval> = setInterval(() => void tick(), intervalMs);
 
     return () => {
       cancelled = true;
