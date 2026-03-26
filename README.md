@@ -1,2 +1,3 @@
-# vestrapay-frontend-
-This repository contains the merchant, back-office and checkout payment page
+# Vestrapay-Frontend
+
+This repository contains the merchant dashboard, back-office and hosted checkout payment page.
