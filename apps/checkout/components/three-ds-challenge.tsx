@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 interface Props {
@@ -7,6 +6,12 @@ interface Props {
   onFailed: (errorMsg?: string) => void;
 }
 import { useEffect, useRef, useState } from "react";
+
+interface ThreeDsResponse {
+  readonly status?: string;
+  readonly debugMessage?: string;
+  readonly message?: string;
+}
 
 function extractThreeDsFromHtml(html: string): { threeDsUrl: string; formData: string } | null {
   if (!html?.trim()) return null;
@@ -55,14 +60,14 @@ export function ThreeDsChallenge({ html, onSuccess, onFailed }: Props) {
     }
   };
 
-  const handleSuccessfulPayment = (_response: any) => {
+  const handleSuccessfulPayment = () => {
     cleanupExistingElements();
     cleanupIframeElements();
     removeMessageListener();
     onSuccess();
   };
 
-  const handleFailedPayment = (response: any) => {
+  const handleFailedPayment = (response?: ThreeDsResponse) => {
     cleanupExistingElements();
     cleanupIframeElements();
     removeMessageListener();
@@ -74,12 +79,22 @@ export function ThreeDsChallenge({ html, onSuccess, onFailed }: Props) {
 
     messageHandlerRef.current = (event: MessageEvent) => {
       try {
-        const raw = event.data;
-        if (raw == null || raw?.status == null) return;
-        if (raw?.status?.toLowerCase() === "success") {
-          handleSuccessfulPayment(raw as { status: "success" });
+        let raw: unknown = event.data;
+        if (typeof raw === "string") {
+          try {
+            raw = JSON.parse(raw);
+          } catch {
+            return;
+          }
+        }
+        if (!raw || typeof raw !== "object") return;
+        const payload = raw as ThreeDsResponse;
+        const status = typeof payload.status === "string" ? payload.status.toLowerCase() : "";
+        if (!status) return;
+        if (status === "success") {
+          handleSuccessfulPayment();
         } else {
-          handleFailedPayment(raw as { debugMessage?: string; message?: string });
+          handleFailedPayment(payload);
         }
       } catch (error) {
         removeMessageListener();
