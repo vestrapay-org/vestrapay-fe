@@ -3,46 +3,27 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Button } from "@vestrapay/ui/components/button";
 import { QrCode, Loader } from "@/components/icons";
-import { PaymentResult } from "@/components/payment-result";
-import { usePaymentSimulation } from "@/hooks/use-payment-simulation";
 import { generateQRPattern } from "@/lib/qr";
 import type { PaymentComponentProps } from "@/lib/types";
 
-export function QRCodePayment({ amount, reference }: PaymentComponentProps): React.ReactNode {
-  const [generated, setGenerated] = useState(false);
-  const [generating, setGenerating] = useState(false);
-  const { status, simulate, reset } = usePaymentSimulation({ delay: 3500 });
+export function QRCodePayment({ amount }: PaymentComponentProps): React.ReactNode {
+  const [generated, setGenerated] = useState<boolean>(false);
+  const [generating, setGenerating] = useState<boolean>(false);
   const generateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const qrPattern = useMemo(generateQRPattern, []);
 
-  useEffect(() => {
-    return () => {
-      if (generateTimeoutRef.current) clearTimeout(generateTimeoutRef.current);
+  useEffect((): (() => void) => {
+    return (): void => {
+      if (generateTimeoutRef.current !== null) clearTimeout(generateTimeoutRef.current);
     };
   }, []);
 
   function handleGenerate(): void {
     setGenerating(true);
-    generateTimeoutRef.current = setTimeout(() => {
+    generateTimeoutRef.current = setTimeout((): void => {
       setGenerating(false);
       setGenerated(true);
     }, 1500);
-  }
-
-  if (status !== "idle") {
-    return (
-      <PaymentResult
-        status={status}
-        amount={amount}
-        reference={reference}
-        onClose={() => {
-          reset();
-          setGenerated(false);
-        }}
-        onRetry={simulate}
-      />
-    );
   }
 
   return (
@@ -115,18 +96,8 @@ export function QRCodePayment({ amount, reference }: PaymentComponentProps): Rea
                 </div>
               </div>
             </div>
-
             <p className="mt-4 text-xs text-[#a3acb9]">Scan with any NQR-supported banking app</p>
           </div>
-
-          <Button
-            variant="outline"
-            className="h-11 w-full cursor-pointer rounded-xl border-[#e3e8ee] text-sm font-medium tracking-wide text-[#3c4257] transition-all duration-200 hover:bg-[#f6f9fc] sm:h-12 sm:text-[15px]"
-            size="lg"
-            onClick={simulate}
-          >
-            I&apos;ve completed the payment
-          </Button>
         </>
       )}
     </div>

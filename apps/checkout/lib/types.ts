@@ -7,11 +7,9 @@ export type ActivePaymentStatus = Exclude<PaymentStatus, "idle">;
 export type CardBrand = "mastercard" | "visa" | "verve" | "unknown";
 
 export interface PaymentComponentProps {
+  readonly accessCode: string;
   readonly amount: string;
-  readonly amountInSmallestUnit: number;
   readonly reference: string;
-  readonly email: string;
-  readonly currency: string;
   readonly onPaymentSuccess?: (reference: string) => void;
   readonly onPaymentFailed?: (reference: string, errorMsg?: string) => void;
 }
@@ -45,19 +43,6 @@ export interface QRCell {
   readonly visible: boolean;
 }
 
-export interface ChargeCardRequest {
-  readonly amount: number;
-  readonly currency: string;
-  readonly email: string;
-  readonly description?: string;
-  readonly card: {
-    readonly number: string;
-    readonly cvv: string;
-    readonly expiryMonth: string;
-    readonly expiryYear: string;
-  };
-}
-
 export type ChargeCardStatus = "success" | "3ds_required" | "failed";
 
 export interface ChargeCardData {
@@ -80,18 +65,7 @@ export interface ApiResponse<T> {
   readonly data: T;
 }
 
-export interface ThreeDsCompleteRequest {
-  readonly reference: string;
-}
-
 export type ThreeDsCompleteData = ChargeCardData;
-
-export interface ChargeBankTransferRequest {
-  readonly amount: number;
-  readonly currency: string;
-  readonly email: string;
-  readonly description?: string;
-}
 
 export interface ChargeBankTransferData {
   readonly status: string;
@@ -100,16 +74,6 @@ export interface ChargeBankTransferData {
   readonly bankName: string;
   readonly accountName: string;
   readonly expiresAt: string;
-}
-
-export interface ChargeBankPaymentRequest {
-  readonly amount: number;
-  readonly currency: string;
-  readonly email: string;
-  readonly bankCode: string;
-  readonly description?: string;
-  readonly redirectUrl?: string;
-  readonly merchantBearsCost?: boolean;
 }
 
 export interface ChargeBankPaymentData {
@@ -123,6 +87,21 @@ export interface ChargeBankPaymentData {
   readonly bankName: string;
 }
 
+export type CheckoutChannel = "card" | "bank_transfer" | "bank_payment" | "ussd" | "qr";
+
+export interface CheckoutConfig {
+  readonly reference: string;
+  readonly amount: number;
+  readonly currency: string;
+  readonly email: string;
+  readonly description: string | null;
+  readonly channels: readonly CheckoutChannel[];
+  readonly merchant: {
+    readonly name: string;
+  };
+  readonly callbackUrl: string | null;
+}
+
 export type VerifyTransactionStatus = "pending" | "processing" | "success" | "failed";
 
 export interface VerifyTransactionData {
@@ -134,4 +113,72 @@ export interface VerifyTransactionData {
   readonly paidAt: string | null;
   readonly fees: number;
   readonly metadata: Record<string, unknown> | null;
+}
+
+export interface CheckoutChargeCardRequest {
+  readonly access_code: string;
+  readonly reference: string;
+  readonly card: {
+    readonly number: string;
+    readonly cvv: string;
+    readonly expiryMonth: string;
+    readonly expiryYear: string;
+  };
+}
+
+export interface CheckoutComplete3dsRequest {
+  readonly access_code: string;
+  readonly reference: string;
+}
+
+export interface CheckoutChargeBankTransferRequest {
+  readonly access_code: string;
+  readonly reference: string;
+}
+
+export interface CheckoutChargeUssdRequest {
+  readonly access_code: string;
+  readonly reference: string;
+  readonly bankCode: string;
+}
+
+export interface CheckoutChargeUssdData {
+  readonly status: string;
+  readonly reference: string;
+  readonly ussdCode: string;
+}
+
+export interface CheckoutCompleteUssdRequest {
+  readonly access_code: string;
+  readonly reference: string;
+}
+
+export interface CheckoutCompleteUssdData {
+  readonly status: string;
+  readonly reference: string;
+}
+
+export interface CheckoutChargeBankPaymentRequest {
+  readonly access_code: string;
+  readonly reference: string;
+  readonly bankCode: string;
+}
+
+export type PaymentStatusEventStatus = "success" | "failed" | "pending" | "processing";
+
+export interface PaymentStatusEvent {
+  readonly reference: string;
+  readonly status: PaymentStatusEventStatus;
+  readonly amount: number;
+  readonly currency: string;
+  readonly paidAt: string | null;
+}
+
+export interface ServerToClientEvents {
+  "payment:status": (event: PaymentStatusEvent) => void;
+}
+
+export interface ClientToServerEvents {
+  subscribe: (payload: { readonly reference: string }) => void;
+  unsubscribe: (payload: { readonly reference: string }) => void;
 }

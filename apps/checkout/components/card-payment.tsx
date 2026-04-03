@@ -8,57 +8,50 @@ import { CreditCard, Loader } from "@/components/icons";
 import { detectCardBrand, CardBrandIcon } from "@/components/card-brands";
 import { PaymentResult } from "@/components/payment-result";
 import { ThreeDsChallenge } from "@/components/three-ds-challenge";
-import { chargeCard } from "@/lib/api";
+import { checkoutChargeCard, checkoutComplete3ds } from "@/lib/api";
 import { formatCardNumber, formatExpiry } from "@/lib/formatters";
 import type { PaymentComponentProps, ActivePaymentStatus } from "@/lib/types";
 
 type CardPaymentPhase =
-  | { step: "form" }
-  | { step: "processing" }
-  | { step: "3ds"; html: string; reference: string }
-  | { step: "result"; status: ActivePaymentStatus; reference: string; errorMsg?: string };
+  | { readonly step: "form" }
+  | { readonly step: "processing" }
+  | { readonly step: "3ds"; readonly html: string; readonly reference: string }
+  | { readonly step: "result"; readonly status: ActivePaymentStatus; readonly reference: string; readonly errorMsg?: string };
 
 export function CardPayment({
+  accessCode,
   amount,
-  amountInSmallestUnit,
   reference,
-  email,
-  currency,
   onPaymentSuccess,
   onPaymentFailed,
 }: PaymentComponentProps): React.ReactNode {
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
-  // const [saveCard, setSaveCard] = useState(false);
+  const [cardNumber, setCardNumber] = useState<string>("");
+  const [expiry, setExpiry] = useState<string>("");
+  const [cvv, setCvv] = useState<string>("");
   const [phase, setPhase] = useState<CardPaymentPhase>({ step: "form" });
 
   const expiryRef = useRef<HTMLInputElement>(null);
   const cvvRef = useRef<HTMLInputElement>(null);
 
   const brand = detectCardBrand(cardNumber);
-  const isComplete =
+  const isComplete: boolean =
     cardNumber.replace(/\s/g, "").length >= 15 && expiry.length >= 4 && cvv.length >= 3;
 
-  const handleCharge = useCallback(async () => {
+  const handleCharge = useCallback(async (): Promise<void> => {
     setPhase({ step: "processing" });
 
     try {
       const digits = cardNumber.replace(/\s/g, "");
       const expiryDigits = expiry.replace(/\D/g, "");
-      const expiryMonth = expiryDigits.slice(0, 2);
-      const expiryYear = expiryDigits.slice(2, 4);
 
-      const res = await chargeCard({
-        amount: amountInSmallestUnit,
-        currency,
-        email,
-        description: `Payment ${reference}`,
+      const res = await checkoutChargeCard({
+        access_code: accessCode,
+        reference,
         card: {
           number: digits,
           cvv,
-          expiryMonth,
-          expiryYear,
+          expiryMonth: expiryDigits.slice(0, 2),
+          expiryYear: expiryDigits.slice(2, 4),
         },
       });
 
@@ -82,27 +75,32 @@ export function CardPayment({
       setPhase({ step: "result", status: "failed", reference, errorMsg: msg });
       onPaymentFailed?.(reference, msg);
     }
-  }, [
-    cardNumber,
-    expiry,
-    cvv,
-    amount,
-    amountInSmallestUnit,
-    currency,
-    email,
-    reference,
-    onPaymentSuccess,
-    onPaymentFailed,
-  ]);
+  }, [accessCode, cardNumber, expiry, cvv, reference, onPaymentSuccess, onPaymentFailed]);
 
-  const handle3dsSuccess = useCallback(() => {
+  const handle3dsSuccess = useCallback(async (): Promise<void> => {
     const ref = phase.step === "3ds" ? phase.reference : reference;
-    setPhase({ step: "result", status: "success", reference: ref });
-    onPaymentSuccess?.(ref);
-  }, [phase, reference, onPaymentSuccess]);
+    setPhase({ step: "processing" });
+
+    try {
+      const res = await checkoutComplete3ds({ access_code: accessCode, reference: ref });
+      const { status, reference: apiRef } = res.data;
+
+      if (status === "success") {
+        setPhase({ step: "result", status: "success", reference: apiRef });
+        onPaymentSuccess?.(apiRef);
+      } else {
+        setPhase({ step: "result", status: "failed", reference: apiRef });
+        onPaymentFailed?.(apiRef);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "3DS verification failed";
+      setPhase({ step: "result", status: "failed", reference: ref, errorMsg: msg });
+      onPaymentFailed?.(ref, msg);
+    }
+  }, [accessCode, phase, reference, onPaymentSuccess, onPaymentFailed]);
 
   const handle3dsFailed = useCallback(
-    (errorMsg?: string) => {
+    (errorMsg?: string): void => {
       const ref = phase.step === "3ds" ? phase.reference : reference;
       setPhase({ step: "result", status: "failed", reference: ref, errorMsg });
       onPaymentFailed?.(ref, errorMsg);
@@ -110,15 +108,13 @@ export function CardPayment({
     [phase, reference, onPaymentFailed],
   );
 
-  const resetToForm = useCallback(() => {
-    setPhase({ step: "form" });
-  }, []);
-
-  const isProcessing = phase.step === "processing";
-
   if (phase.step === "3ds") {
     return (
-      <ThreeDsChallenge html={phase.html} onSuccess={handle3dsSuccess} onFailed={handle3dsFailed} />
+      <ThreeDsChallenge
+        html={phase.html}
+        onSuccess={handle3dsSuccess}
+        onFailed={handle3dsFailed}
+      />
     );
   }
 
@@ -129,11 +125,13 @@ export function CardPayment({
         amount={amount}
         reference={phase.reference}
         errorMsg={phase.errorMsg}
-        onClose={resetToForm}
+        onClose={(): void => setPhase({ step: "form" })}
         onRetry={handleCharge}
       />
     );
   }
+
+  const isProcessing: boolean = phase.step === "processing";
 
   return (
     <div className="animate-in fade-in-0 slide-in-from-bottom-2 space-y-4 duration-300 sm:space-y-5">
@@ -148,10 +146,9 @@ export function CardPayment({
             inputMode="numeric"
             placeholder="1234  1234  1234  1234"
             value={cardNumber}
-            onChange={(e) => {
+            onChange={(e): void => {
               const formatted = formatCardNumber(e.target.value);
               setCardNumber(formatted);
-              // 19 = 16 digits + 3 spaces for standard cards, 18 = 15 digits + 3 spaces for Amex
               if (
                 formatted.replace(/\s/g, "").length >= 16 ||
                 (formatted.replace(/\s/g, "").length >= 15 &&
@@ -186,10 +183,9 @@ export function CardPayment({
             inputMode="numeric"
             placeholder="MM / YY"
             value={expiry}
-            onChange={(e) => {
+            onChange={(e): void => {
               const formatted = formatExpiry(e.target.value);
               setExpiry(formatted);
-              // "MM/YY" = 5 chars when fully entered
               if (formatted.length >= 5) {
                 cvvRef.current?.focus();
               }
@@ -209,10 +205,9 @@ export function CardPayment({
             placeholder="CVC"
             maxLength={4}
             value={cvv}
-            onChange={(e) => {
+            onChange={(e): void => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 4);
               setCvv(val);
-              // Auto-blur when CVV is complete (3 or 4 digits)
               if (val.length >= 3) {
                 (e.target as HTMLInputElement).blur();
               }
@@ -221,16 +216,6 @@ export function CardPayment({
           />
         </div>
       </div>
-
-      {/* <label className="mt-1 flex cursor-pointer items-center gap-2.5 select-none">
-        <input
-          type="checkbox"
-          checked={saveCard}
-          onChange={(e) => setSaveCard(e.target.checked)}
-          className="size-4 cursor-pointer rounded border-[#e3e8ee] accent-[#34287b]"
-        />
-        <span className="text-[13px] text-[#6b7c93]">Save card for future payments</span>
-      </label> */}
 
       <Button
         className="bg-primary text-primary-foreground hover:bg-primary/90 mt-1 h-11 w-full cursor-pointer rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 disabled:opacity-40 sm:mt-2 sm:h-12 sm:text-[15px]"

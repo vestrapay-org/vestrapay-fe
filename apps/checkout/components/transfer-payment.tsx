@@ -1,24 +1,22 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Button } from "@vestrapay/ui/components/button";
+import { useState, useEffect, useCallback } from "react";
 import { Copy, Check, Clock, Loader } from "@/components/icons";
 import { PaymentResult } from "@/components/payment-result";
 import { useClipboard } from "@/hooks/use-clipboard";
-import { chargeBankTransfer, verifyTransaction } from "@/lib/api";
+import { usePaymentSocket } from "@/hooks/use-payment-socket";
+import { checkoutChargeBankTransfer } from "@/lib/api";
 import type {
   PaymentComponentProps,
   ActivePaymentStatus,
   ChargeBankTransferData,
-  VerifyTransactionStatus,
+  PaymentStatusEvent,
 } from "@/lib/types";
 
 const EXPIRY_SECONDS = 1800 as const;
 const POLL_INTERVAL_MS = 2000 as const;
-const SOCKET_ENDPOINT = process.env.NEXT_PUBLIC_PAYMENT_SOCKET_URL!;
-const TRANSFER_SESSION_KEY_PREFIX = "vestrapay.transfer.session." as const;
 
-type TransferPaymentStatus = "idle" | "processing" | "success" | "failed";
+type TransferStatus = "idle" | "success" | "failed";
 
 interface TransferState {
   status: TransferPaymentStatus;
@@ -27,14 +25,6 @@ interface TransferState {
   pollingReference: string | null;
   showDetails: boolean;
   countdown: number;
-  expiresAtMs: number | null;
-  expired: boolean;
-}
-
-interface StoredTransferSession {
-  readonly details: ChargeBankTransferData;
-  readonly pollingReference: string;
-  readonly expiresAtMs: number;
 }
 
 function formatCountdown(totalSeconds: number): string {
@@ -92,9 +82,9 @@ function toSocketUrl(endpoint: string): string {
 }
 
 interface DetailRowProps {
-  label: string;
-  value: string;
-  children?: React.ReactNode;
+  readonly label: string;
+  readonly value: string;
+  readonly children?: React.ReactNode;
 }
 
 function DetailRow({ label, value, children }: DetailRowProps): React.ReactNode {
@@ -108,23 +98,8 @@ function DetailRow({ label, value, children }: DetailRowProps): React.ReactNode 
     </div>
   );
 }
-interface ErrorBannerProps {
-  message: string;
-}
 
-function ErrorBanner({ message }: ErrorBannerProps): React.ReactNode {
-  return (
-    <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-600">
-      {message}
-    </div>
-  );
-}
-
-interface CountdownBannerProps {
-  timeStr: string;
-}
-
-function CountdownBanner({ timeStr }: CountdownBannerProps): React.ReactNode {
+function CountdownBanner({ timeStr }: { readonly timeStr: string }): React.ReactNode {
   return (
     <div className="rounded-xl border border-amber-200/60 bg-amber-50/50 p-3.5">
       <div className="flex items-start gap-2.5 text-xs leading-relaxed text-amber-800/80">
@@ -146,8 +121,6 @@ interface IdleViewProps {
 }
 
 function IdleView({ amount, generating, error, onGenerate }: IdleViewProps): React.ReactNode {
-  console.log("IdleView", error);
-
   return (
     <div className="animate-in fade-in-0 slide-in-from-bottom-2 space-y-5 duration-300">
       <p className="text-sm leading-relaxed text-[#6b7c93]">
@@ -164,7 +137,7 @@ function IdleView({ amount, generating, error, onGenerate }: IdleViewProps): Rea
         </div>
       </div>
 
-      {/* {error && <ErrorBanner message={error} />} */}
+      {error && <ErrorBanner message={error} />}
 
       <Button
         className="bg-primary text-primary-foreground hover:bg-primary/90 mt-2 h-11 w-full cursor-pointer rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 sm:h-12 sm:text-[15px]"
@@ -186,11 +159,8 @@ interface TransferDetailsViewProps {
   details: ChargeBankTransferData;
   timeStr: string;
   copied: boolean;
-  generating: boolean;
-  expired: boolean;
   onCopy: (value: string) => void;
   onConfirm: () => void;
-  onRegenerate: () => void;
 }
 
 interface ProcessingViewProps {
@@ -220,13 +190,12 @@ function TransferDetailsView({
   expired,
   onCopy,
   onConfirm,
-  onRegenerate,
 }: TransferDetailsViewProps): React.ReactNode {
   return (
     <div className="animate-in fade-in-0 slide-in-from-bottom-3 space-y-5 duration-400">
       <p className="text-sm leading-relaxed text-[#6b7c93]">
         Transfer exactly <span className="font-semibold text-[#3c4257]">{amount}</span> to the
-        account below. We&apos;ll verify automatically.
+        account below. We&apos;ll verify automatically once your transfer arrives.
       </p>
 
       <div className="overflow-hidden rounded-xl border border-[#e3e8ee]">
@@ -243,7 +212,7 @@ function TransferDetailsView({
           </div>
           <button
             type="button"
-            onClick={() => onCopy(details.accountNumber)}
+            onClick={(): void => onCopy(details.accountNumber)}
             className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f6f9fc] px-3 py-1.5 text-xs font-medium text-[#6b7c93] transition-all duration-200 hover:bg-[#edf2f7]"
           >
             {copied ? (
@@ -296,88 +265,50 @@ function TransferDetailsView({
         className="mt-2 h-11 w-full cursor-pointer rounded-xl border-[#e3e8ee] text-sm font-medium tracking-wide text-[#3c4257] transition-all duration-200 hover:bg-[#f6f9fc] sm:h-12 sm:text-[15px]"
         size="lg"
         onClick={onConfirm}
-        disabled={expired}
       >
-        I&apos;ve sent the money
+        I've sent the money
       </Button>
     </div>
   );
 }
 
 export function TransferPayment({
+  accessCode,
   amount,
-  amountInSmallestUnit,
   reference,
-  email,
-  currency,
   onPaymentSuccess,
   onPaymentFailed,
 }: PaymentComponentProps): React.ReactNode {
-  const sessionStorageKey = getTransferSessionStorageKey(reference);
   const [state, setState] = useState<TransferState>({
     status: "idle",
     details: null,
-    error: null,
-    pollingReference: null,
-    showDetails: false,
+    socketReference: null,
     countdown: EXPIRY_SECONDS,
     expiresAtMs: null,
     expired: false,
   });
-  const [generating, setGenerating] = useState(false);
 
   const { copied, copy } = useClipboard();
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const socketRef = useRef<WebSocket | null>(null);
-  const settledRef = useRef(false);
-
-  const settlePayment = useCallback(
-    (nextStatus: "success" | "failed", txnReference: string): void => {
-      if (settledRef.current) return;
-      settledRef.current = true;
-      setState((prev) => ({ ...prev, status: nextStatus, error: null }));
-      clearTransferSession(sessionStorageKey);
-      if (pollIntervalRef.current) {
-        clearInterval(pollIntervalRef.current);
-        pollIntervalRef.current = null;
-      }
-      if (socketRef.current) {
-        socketRef.current.close();
-        socketRef.current = null;
-      }
-      if (nextStatus === "success") onPaymentSuccess?.(txnReference);
-      if (nextStatus === "failed") onPaymentFailed?.(txnReference);
-    },
-    [onPaymentFailed, onPaymentSuccess, sessionStorageKey],
-  );
 
   useEffect(() => {
     return () => {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-      if (socketRef.current) socketRef.current.close();
     };
   }, []);
 
   useEffect(() => {
-    if (!state.showDetails || state.status !== "idle" || !state.expiresAtMs) return;
+    if (!state.showDetails || state.status !== "idle") return;
 
     const timer = setInterval(() => {
-      setState((prev) => {
-        if (!prev.expiresAtMs) return prev;
-        const remaining = getRemainingSecondsFromMs(prev.expiresAtMs);
-        const hasExpired = remaining <= 0;
-        if (hasExpired && !prev.expired) {
-          clearTransferSession(sessionStorageKey);
-        }
-        return { ...prev, countdown: remaining, expired: hasExpired };
-      });
+      setState((prev) => ({ ...prev, countdown: Math.max(0, prev.countdown - 1) }));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [sessionStorageKey, state.showDetails, state.status, state.expiresAtMs]);
+  }, [state.showDetails, state.status]);
 
   useEffect(() => {
-    if (!state.showDetails || !state.pollingReference || state.expired) return;
+    if (!state.showDetails || !state.pollingReference) return;
 
     const ref = state.pollingReference;
 
@@ -387,9 +318,13 @@ export function TransferPayment({
         const txnStatus: VerifyTransactionStatus = res.data.status;
 
         if (txnStatus === "success") {
-          settlePayment("success", ref);
+          setState((prev) => ({ ...prev, status: "success" }));
+          if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+          onPaymentSuccess?.(ref);
         } else if (txnStatus === "failed") {
-          settlePayment("failed", ref);
+          setState((prev) => ({ ...prev, status: "failed" }));
+          if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+          onPaymentFailed?.(ref);
         }
       } catch (err) {
         console.error("Polling error:", err);
@@ -402,60 +337,12 @@ export function TransferPayment({
     return () => {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
-  }, [settlePayment, state.expired, state.showDetails, state.pollingReference]);
-
-  useEffect(() => {
-    if (!state.showDetails || !state.pollingReference || state.expired) return;
-    const ws = new WebSocket(toSocketUrl(SOCKET_ENDPOINT));
-    socketRef.current = ws;
-    const ref = state.pollingReference;
-
-    ws.onopen = () => {
-      const payload = { action: "subscribe", reference: ref };
-      ws.send(JSON.stringify(payload));
-      ws.send(JSON.stringify({ type: "subscribe", data: payload }));
-    };
-
-    ws.onmessage = (event: MessageEvent<string>) => {
-      let parsed: unknown = event.data;
-      if (typeof parsed === "string") {
-        try {
-          parsed = JSON.parse(parsed);
-        } catch {
-          return;
-        }
-      }
-      if (!parsed || typeof parsed !== "object") return;
-      const payload = parsed as {
-        status?: string;
-        reference?: string;
-        data?: { status?: string; reference?: string };
-      };
-      const eventStatus = (payload.status ?? payload.data?.status ?? "").toLowerCase();
-      const eventReference = payload.reference ?? payload.data?.reference;
-      if (eventReference !== ref) return;
-      if (eventStatus === "success") settlePayment("success", ref);
-      if (eventStatus === "failed") settlePayment("failed", ref);
-    };
-
-    return () => {
-      ws.close();
-      if (socketRef.current === ws) socketRef.current = null;
-    };
-  }, [settlePayment, state.expired, state.showDetails, state.pollingReference]);
+  }, [state.showDetails, state.pollingReference, onPaymentSuccess, onPaymentFailed]);
 
   const handleGenerate = useCallback(async (): Promise<void> => {
     settledRef.current = false;
     setGenerating(true);
     setState((prev) => ({ ...prev, error: null }));
-    if (pollIntervalRef.current) {
-      clearInterval(pollIntervalRef.current);
-      pollIntervalRef.current = null;
-    }
-    if (socketRef.current) {
-      socketRef.current.close();
-      socketRef.current = null;
-    }
 
     try {
       const res = await chargeBankTransfer({
@@ -464,62 +351,28 @@ export function TransferPayment({
         email,
         description: `Bank transfer ${reference}`,
       });
-      const expiresAtMs = Date.now() + EXPIRY_SECONDS * 1000;
-      const detailsWithExpiry: ChargeBankTransferData = {
-        ...res.data,
-        expiresAt: new Date(expiresAtMs).toISOString(),
-      };
-      saveTransferSession(sessionStorageKey, {
-        details: detailsWithExpiry,
-        pollingReference: res.data.reference,
-        expiresAtMs,
-      });
 
       setState((prev) => ({
         ...prev,
-        details: detailsWithExpiry,
+        details: res.data,
         pollingReference: res.data.reference,
         showDetails: true,
-        countdown: EXPIRY_SECONDS,
-        expiresAtMs,
-        expired: false,
-        status: "idle",
+        countdown: getRemainingSeconds(res.data.expiresAt),
       }));
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to generate account";
-      setState((prev) => ({ ...prev, error: message }));
+      setError(err instanceof Error ? err.message : "Failed to generate account");
     } finally {
       setGenerating(false);
     }
-  }, [amountInSmallestUnit, currency, email, reference, sessionStorageKey]);
+  }, [amountInSmallestUnit, currency, email, reference]);
 
   useEffect(() => {
-    const existingSession = readTransferSession(sessionStorageKey);
-    if (existingSession) {
-      const remaining = getRemainingSecondsFromMs(existingSession.expiresAtMs);
-      if (remaining <= 0) {
-        clearTransferSession(sessionStorageKey);
-        void handleGenerate();
-        return;
-      }
-      setState((prev) => ({
-        ...prev,
-        details: existingSession.details,
-        pollingReference: existingSession.pollingReference,
-        showDetails: true,
-        countdown: remaining,
-        expiresAtMs: existingSession.expiresAtMs,
-        expired: false,
-      }));
-      return;
-    }
-    void handleGenerate();
-  }, [handleGenerate, sessionStorageKey]);
+    handleGenerate();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleConfirmPaymentSent = useCallback((): void => {
-    if (state.expired) return;
     setState((prev) => ({ ...prev, status: "processing" }));
-  }, [state.expired]);
+  }, []);
 
   const handleClose = useCallback((): void => {
     setState({
@@ -529,11 +382,8 @@ export function TransferPayment({
       pollingReference: null,
       showDetails: false,
       countdown: EXPIRY_SECONDS,
-      expiresAtMs: null,
-      expired: false,
     });
-    clearTransferSession(sessionStorageKey);
-  }, [sessionStorageKey]);
+  }, []);
 
   if (state.status === "processing") {
     return <ProcessingView amount={amount} />;
@@ -544,26 +394,38 @@ export function TransferPayment({
       <PaymentResult
         status={state.status as ActivePaymentStatus}
         amount={amount}
-        reference={state.pollingReference ?? reference}
-        errorMsg={state.error ?? undefined}
+        reference={state.details?.reference ?? reference}
         onClose={handleClose}
-        onRetry={handleGenerate}
+        onRetry={state.status === "failed" ? handleGenerate : undefined}
       />
     );
   }
 
-  if (!state.showDetails) {
+  if (generating) {
     return (
-      <IdleView
-        amount={amount}
-        generating={generating}
-        error={state.error}
-        onGenerate={handleGenerate}
-      />
+      <div className="flex flex-col items-center justify-center px-4 py-12">
+        <Loader className="text-primary mb-4 size-6 animate-spin" />
+        <p className="text-sm text-[#6b7c93]">Generating account...</p>
+      </div>
     );
   }
 
-  if (!state.details) return null;
+  if (error !== null) {
+    return (
+      <div className="flex flex-col items-center justify-center px-4 py-12">
+        <p className="text-sm text-[#6b7c93]">Unable to generate an account. Please try again.</p>
+        <button
+          type="button"
+          onClick={handleGenerate}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-5 h-11 rounded-xl px-6 text-sm font-semibold tracking-wide transition-all duration-200"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (state.details === null) return null;
 
   return (
     <TransferDetailsView
@@ -575,7 +437,6 @@ export function TransferPayment({
       expired={state.expired}
       onCopy={copy}
       onConfirm={handleConfirmPaymentSent}
-      onRegenerate={handleGenerate}
     />
   );
 }
