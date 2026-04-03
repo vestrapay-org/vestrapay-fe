@@ -5,26 +5,34 @@ import type { MethodNavProps, PaymentMethodConfig } from "../_lib/types";
 
 export function MethodNav({ methods, active, onSelect }: MethodNavProps): React.ReactNode {
   return (
-    <nav className="shrink-0 border-b border-[#e3e8ee] sm:w-45 sm:border-r sm:border-b-0 sm:py-6">
-      <p className="hidden px-5 pb-3 text-[10px] font-semibold tracking-wider text-[#8898aa] uppercase sm:block">
-        Payment Options
-      </p>
-      <div className="flex overflow-x-auto px-3 py-2 sm:flex-col sm:overflow-x-visible sm:px-0 sm:py-0">
-        {methods.map(({ id, label, icon: Icon }: PaymentMethodConfig): React.ReactNode => {
+    <nav className="shrink-0 border-b border-[#ebedf2] bg-[#fafbfc] sm:w-44 sm:border-r sm:border-b-0">
+      <div className="hidden px-4 pt-5 pb-1 sm:block">
+        <img src="/vestrapay.svg" alt="Vestrapay" className="h-4.5 w-auto opacity-70" />
+      </div>
+
+      <div className="flex overflow-x-auto sm:mt-3 sm:flex-col sm:overflow-x-visible">
+        {methods.map(({ id, label, icon: Icon }: PaymentMethodConfig, i: number): React.ReactNode => {
           const isActive: boolean = active === id;
           return (
             <button
               key={id}
               type="button"
               onClick={(): void => onSelect(id as PaymentMethod)}
-              className={`flex shrink-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-200 sm:w-full sm:gap-3 sm:rounded-none sm:px-5 sm:py-3 ${
+              className={`animate-in fade-in-0 slide-in-from-left-2 group relative flex shrink-0 cursor-pointer items-center gap-2 px-3 py-2.5 text-[12px] font-medium transition-colors duration-150 sm:w-full sm:px-4 sm:py-2.5 ${
                 isActive
-                  ? "bg-primary/8 text-primary sm:bg-primary/4 sm:border-primary sm:border-r-2"
-                  : "border-r-2 border-transparent text-[#8898aa] hover:bg-[#f6f9fc] hover:text-[#6b7c93]"
+                  ? "text-primary bg-primary/4"
+                  : "text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#374151]"
               }`}
+              style={{ animationDelay: `${i * 50}ms` }}
             >
+              {isActive && (
+                <span className="bg-primary absolute top-1 bottom-1 left-0 hidden w-0.5 rounded-r sm:block" />
+              )}
+              {isActive && (
+                <span className="bg-primary absolute right-0 bottom-0 left-0 h-0.5 sm:hidden" />
+              )}
               <Icon className="size-5" active={isActive} />
-              <span className="text-xs sm:text-[13px]">{label}</span>
+              <span>{label}</span>
             </button>
           );
         })}

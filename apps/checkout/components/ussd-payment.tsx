@@ -162,11 +162,11 @@ export function USSDPayment({
               placeholder="Search for your bank"
               value={search}
               onChange={(e): void => setSearch(e.target.value)}
-              className="h-11 w-full rounded-xl border border-[#e3e8ee] bg-white px-4 text-sm text-[#3c4257] transition-all duration-200 outline-none placeholder:text-[#a3acb9]"
+              className="h-11 w-full rounded-md border border-[#e3e8ee] bg-white px-4 text-sm text-[#3c4257] transition-all duration-200 outline-none placeholder:text-[#a3acb9]"
             />
           </div>
 
-          <div className="stripe-scroll max-h-48 overflow-y-auto rounded-xl border border-[#e3e8ee] sm:max-h-55">
+          <div className="stripe-scroll max-h-48 overflow-y-auto rounded-md border border-[#e3e8ee] sm:max-h-55">
             {filtered.map((bank, i) => (
               <button
                 key={bank.code}
@@ -191,7 +191,7 @@ export function USSDPayment({
           </div>
 
           <Button
-            className="bg-primary text-primary-foreground hover:bg-primary/90 mt-2 h-11 w-full cursor-pointer rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 disabled:opacity-40 sm:h-12 sm:text-[15px]"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 mt-2 h-11 w-full cursor-pointer rounded-md text-sm font-semibold tracking-wide transition-all duration-200 disabled:opacity-40 sm:h-11"
             size="lg"
             disabled={selectedBankCode === null || phase.step === "charging"}
             onClick={handleCharge}
@@ -208,7 +208,7 @@ export function USSDPayment({
 
       {phase.step === "dialing" && (
         <>
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 rounded-xl border border-[#e3e8ee] bg-[#f6f9fc] p-5 text-center duration-300">
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 rounded-md border border-[#e3e8ee] bg-[#f6f9fc] p-5 text-center duration-300">
             <p className="text-[10px] font-medium tracking-wider text-[#8898aa] uppercase">
               Dial this code on your phone
             </p>
@@ -218,7 +218,7 @@ export function USSDPayment({
             <button
               type="button"
               onClick={(): void => copy(phase.ussdCode)}
-              className="mt-3 inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-[#6b7c93] transition-all duration-200 hover:bg-[#edf2f7]"
+              className="mt-3 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-white px-3 py-1.5 text-xs font-medium text-[#6b7c93] transition-all duration-200 hover:bg-[#edf2f7]"
             >
               {copied ? (
                 <>
@@ -236,7 +236,7 @@ export function USSDPayment({
 
           <Button
             variant="outline"
-            className="h-11 w-full cursor-pointer rounded-xl border-[#e3e8ee] text-sm font-medium tracking-wide text-[#3c4257] transition-all duration-200 hover:bg-[#f6f9fc] sm:h-12 sm:text-[15px]"
+            className="h-11 w-full cursor-pointer rounded-md border-[#e3e8ee] text-sm font-medium tracking-wide text-[#3c4257] transition-all duration-200 hover:bg-[#f6f9fc] sm:h-11"
             size="lg"
             onClick={handleDialed}
           >

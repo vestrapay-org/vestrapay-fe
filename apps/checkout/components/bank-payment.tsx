@@ -195,7 +195,7 @@ export function BankPayment({
               setState((prev) => ({ ...prev, selectedBankCode: e.target.value, error: null }));
             }}
             disabled={state.status === "loading"}
-            className="focus:border-primary focus:ring-primary/10 w-full appearance-none rounded-xl border border-[#e3e8ee] bg-white px-4 py-3 pr-10 text-sm text-[#3c4257] transition-all duration-200 hover:border-[#d1d5db] focus:ring-2 focus:outline-none disabled:bg-[#f6f9fc] disabled:text-[#a0aec0]"
+            className="focus:border-primary focus:ring-primary/10 w-full appearance-none rounded-md border border-[#e3e8ee] bg-white px-4 py-3 pr-10 text-sm text-[#3c4257] transition-all duration-200 hover:border-[#d1d5db] focus:ring-2 focus:outline-none disabled:bg-[#f6f9fc] disabled:text-[#a0aec0]"
           >
             <option value="">Choose a bank...</option>
             {state.banks.map((bank) => (
@@ -209,13 +209,13 @@ export function BankPayment({
       </div>
 
       {state.error !== null && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">
           {state.error}
         </div>
       )}
 
       <Button
-        className="bg-primary text-primary-foreground hover:bg-primary/90 mt-2 h-11 w-full cursor-pointer rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 disabled:opacity-60 sm:h-12 sm:text-[15px]"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 mt-2 h-11 w-full cursor-pointer rounded-md text-sm font-semibold tracking-wide transition-all duration-200 disabled:opacity-60 sm:h-11"
         size="lg"
         onClick={handleInitiate}
         disabled={state.selectedBankCode === null || state.status === "loading"}

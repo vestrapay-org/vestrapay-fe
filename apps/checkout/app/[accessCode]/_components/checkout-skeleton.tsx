@@ -1,33 +1,30 @@
 const SKELETON_NAV_ITEMS = [
-  { iconClass: "size-5", labelClass: "w-8" },
-  { iconClass: "size-5", labelClass: "w-24" },
-  { iconClass: "size-5", labelClass: "w-20" },
-] as const satisfies ReadonlyArray<{
-  readonly iconClass: string;
-  readonly labelClass: string;
-}>;
+  { labelClass: "w-8" },
+  { labelClass: "w-24" },
+  { labelClass: "w-20" },
+] as const satisfies ReadonlyArray<{ readonly labelClass: string }>;
 
 function SkeletonBlock({
   className,
 }: {
   readonly className: string;
 }): React.ReactNode {
-  return <div className={`rounded bg-[#e3e8ee] ${className}`} />;
+  return <div className={`skeleton-shimmer rounded ${className}`} />;
 }
 
 function NavSkeleton(): React.ReactNode {
   return (
-    <div className="shrink-0 border-b border-[#e3e8ee] sm:w-45 sm:border-r sm:border-b-0 sm:py-6">
-      <div className="hidden px-5 pb-3 sm:block">
-        <SkeletonBlock className="h-2.5 w-28" />
+    <div className="shrink-0 border-b border-[#ebedf2] bg-[#fafbfc] sm:w-44 sm:border-r sm:border-b-0">
+      <div className="hidden px-4 pt-5 pb-1 sm:block">
+        <SkeletonBlock className="h-4.5 w-16" />
       </div>
-      <div className="flex overflow-x-auto px-3 py-2 sm:flex-col sm:overflow-x-visible sm:px-0 sm:py-0">
-        {SKELETON_NAV_ITEMS.map(({ iconClass, labelClass }, i) => (
+      <div className="flex overflow-x-auto sm:mt-3 sm:flex-col sm:overflow-x-visible">
+        {SKELETON_NAV_ITEMS.map(({ labelClass }, i) => (
           <div
             key={i}
-            className="flex shrink-0 items-center gap-2 px-3 py-2 sm:gap-3 sm:px-5 sm:py-3"
+            className="flex shrink-0 items-center gap-2 px-3 py-2.5 sm:px-4"
           >
-            <SkeletonBlock className={`rounded-md ${iconClass}`} />
+            <SkeletonBlock className="size-5 rounded" />
             <SkeletonBlock className={`h-3 ${labelClass}`} />
           </div>
         ))}
@@ -38,41 +35,52 @@ function NavSkeleton(): React.ReactNode {
 
 function HeaderSkeleton(): React.ReactNode {
   return (
-    <div className="px-5 pt-5 pb-4 sm:px-8 sm:pt-8 sm:pb-6">
-      <div className="mb-5 flex items-center justify-between pb-3">
-        <SkeletonBlock className="h-7 w-28 sm:h-8" />
-        <SkeletonBlock className="size-8 rounded-full" />
+    <div className="border-b border-[#ebedf2] px-5 pt-4 pb-4 sm:px-6 sm:pt-5 sm:pb-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <SkeletonBlock className="size-8 rounded-md" />
+          <div className="space-y-1.5">
+            <SkeletonBlock className="h-3 w-24" />
+            <SkeletonBlock className="h-2.5 w-36" />
+          </div>
+        </div>
+        <SkeletonBlock className="size-6 rounded" />
       </div>
-      <div className="space-y-2">
-        <SkeletonBlock className="h-4 w-36" />
-        <SkeletonBlock className="h-3 w-52" />
-      </div>
-      <SkeletonBlock className="mt-2 h-7 w-32 sm:mt-3 sm:h-9 sm:w-40" />
+      <SkeletonBlock className="mt-3 h-7 w-32" />
     </div>
   );
 }
 
 function CardFormSkeleton(): React.ReactNode {
   return (
-    <div className="px-5 pt-5 pb-8 sm:px-8 sm:pt-6">
-      <div className="space-y-4 sm:space-y-5">
-        <div className="space-y-2">
-          <SkeletonBlock className="h-3 w-20" />
-          <SkeletonBlock className="h-11 rounded-xl sm:h-12" />
+    <div className="px-5 pt-4 pb-6 sm:px-6 sm:pt-5">
+      <div className="space-y-3.5 sm:space-y-4">
+        <div className="space-y-1.5">
+          <SkeletonBlock className="h-2.5 w-18" />
+          <SkeletonBlock className="h-10 rounded-md sm:h-11" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <SkeletonBlock className="h-3 w-12" />
-            <SkeletonBlock className="h-11 rounded-xl sm:h-12" />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <SkeletonBlock className="h-2.5 w-10" />
+            <SkeletonBlock className="h-10 rounded-md sm:h-11" />
           </div>
-          <div className="space-y-2">
-            <SkeletonBlock className="h-3 w-8" />
-            <SkeletonBlock className="h-11 rounded-xl sm:h-12" />
+          <div className="space-y-1.5">
+            <SkeletonBlock className="h-2.5 w-7" />
+            <SkeletonBlock className="h-10 rounded-md sm:h-11" />
           </div>
         </div>
 
-        <SkeletonBlock className="mt-1 h-11 rounded-xl sm:mt-2 sm:h-12" />
+        <SkeletonBlock className="mt-1 h-10 rounded-md sm:mt-1.5 sm:h-11" />
+
+        <div className="flex items-center justify-center gap-3 pt-1">
+          <SkeletonBlock className="h-2.5 w-14" />
+          <div className="flex items-center gap-2">
+            <SkeletonBlock className="h-4 w-8" />
+            <SkeletonBlock className="h-4 w-8" />
+            <SkeletonBlock className="h-3.5 w-10" />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -82,7 +90,7 @@ export function CheckoutSkeleton(): React.ReactNode {
   return (
     <>
       <NavSkeleton />
-      <div className="flex-1 animate-pulse">
+      <div className="min-w-0 flex-1">
         <HeaderSkeleton />
         <CardFormSkeleton />
       </div>

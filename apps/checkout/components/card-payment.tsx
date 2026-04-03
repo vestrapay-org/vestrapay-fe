@@ -134,9 +134,9 @@ export function CardPayment({
   const isProcessing: boolean = phase.step === "processing";
 
   return (
-    <div className="animate-in fade-in-0 slide-in-from-bottom-2 space-y-4 duration-300 sm:space-y-5">
-      <div className="space-y-2">
-        <Label htmlFor="card-number" className="text-[13px] font-medium text-[#3c4257]">
+    <div className="animate-in fade-in-0 slide-in-from-bottom-2 space-y-3.5 duration-300 sm:space-y-4">
+      <div className="space-y-1.5">
+        <Label htmlFor="card-number" className="text-[12px] font-medium text-[#3c4257]">
           Card number
         </Label>
         <div className="relative">
@@ -144,7 +144,7 @@ export function CardPayment({
             id="card-number"
             type="text"
             inputMode="numeric"
-            placeholder="1234  1234  1234  1234"
+            placeholder="0000 0000 0000 0000"
             value={cardNumber}
             onChange={(e): void => {
               const formatted = formatCardNumber(e.target.value);
@@ -157,23 +157,23 @@ export function CardPayment({
                 expiryRef.current?.focus();
               }
             }}
-            className="h-11 rounded-xl border-[#e3e8ee] bg-white pr-14 pl-4 text-sm tracking-wider text-[#3c4257] transition-all duration-200 placeholder:text-[#a3acb9] sm:h-12 sm:text-[15px]"
+            className="h-10 rounded-md border-[#e3e8ee] bg-white pr-14 pl-3.5 text-sm tracking-wider text-[#3c4257] transition-all duration-200 placeholder:text-[#a3acb9] sm:h-11"
           />
           <div className="absolute top-1/2 right-3 -translate-y-1/2 transition-all duration-300">
             {brand !== "unknown" ? (
               <div className="animate-in fade-in-0 zoom-in-75 duration-300">
-                <CardBrandIcon brand={brand} className="h-6 w-10" />
+                <CardBrandIcon brand={brand} className="h-5 w-8" />
               </div>
             ) : (
-              <CreditCard className="size-5 text-[#cdd3da]" />
+              <CreditCard className="size-4.5 text-[#cdd3da]" />
             )}
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="expiry" className="text-[13px] font-medium text-[#3c4257]">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="expiry" className="text-[12px] font-medium text-[#3c4257]">
             Expiry
           </Label>
           <Input
@@ -190,11 +190,11 @@ export function CardPayment({
                 cvvRef.current?.focus();
               }
             }}
-            className="h-11 rounded-xl border-[#e3e8ee] bg-white text-sm tracking-wider text-[#3c4257] transition-all duration-200 placeholder:text-[#a3acb9] sm:h-12 sm:text-[15px]"
+            className="h-10 rounded-md border-[#e3e8ee] bg-white text-sm tracking-wider text-[#3c4257] transition-all duration-200 placeholder:text-[#a3acb9] sm:h-11"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="cvv" className="text-[13px] font-medium text-[#3c4257]">
+        <div className="space-y-1.5">
+          <Label htmlFor="cvv" className="text-[12px] font-medium text-[#3c4257]">
             CVC
           </Label>
           <Input
@@ -212,13 +212,13 @@ export function CardPayment({
                 (e.target as HTMLInputElement).blur();
               }
             }}
-            className="h-11 rounded-xl border-[#e3e8ee] bg-white text-sm tracking-wider text-[#3c4257] transition-all duration-200 placeholder:text-[#a3acb9] sm:h-12 sm:text-[15px]"
+            className="h-10 rounded-md border-[#e3e8ee] bg-white text-sm tracking-wider text-[#3c4257] transition-all duration-200 placeholder:text-[#a3acb9] sm:h-11"
           />
         </div>
       </div>
 
       <Button
-        className="bg-primary text-primary-foreground hover:bg-primary/90 mt-1 h-11 w-full cursor-pointer rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 disabled:opacity-40 sm:mt-2 sm:h-12 sm:text-[15px]"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 mt-1 h-10 w-full cursor-pointer rounded-md text-sm font-semibold tracking-wide transition-all duration-200 hover:shadow-md disabled:opacity-40 sm:mt-1.5 sm:h-11"
         size="lg"
         disabled={!isComplete || isProcessing}
         onClick={handleCharge}

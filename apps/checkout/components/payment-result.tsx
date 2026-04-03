@@ -85,7 +85,7 @@ function SuccessResult({
         <button
           type="button"
           onClick={onClose}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-6 h-11 w-full cursor-pointer rounded-xl text-sm font-semibold transition-colors sm:h-12"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-6 h-11 w-full cursor-pointer rounded-md text-sm font-semibold transition-colors sm:h-11"
         >
           Make Another Payment
         </button>
@@ -123,7 +123,7 @@ function FailedResult({
         <button
           type="button"
           onClick={onRetry}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-6 h-11 w-full cursor-pointer rounded-xl text-sm font-semibold transition-colors sm:h-12"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-6 h-11 w-full cursor-pointer rounded-md text-sm font-semibold transition-colors sm:h-11"
         >
           Try Again
         </button>

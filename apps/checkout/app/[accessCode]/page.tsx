@@ -114,7 +114,6 @@ export default function CheckoutPage(): React.ReactNode {
       window.location.href = url.toString();
     } else {
       window.close();
-      // fallback if window.close() is blocked (not opened by script)
       history.back();
     }
   }
@@ -136,9 +135,9 @@ export default function CheckoutPage(): React.ReactNode {
   const ActiveComponent = PAYMENT_COMPONENTS[methodState.display];
 
   return (
-    <main className="flex min-h-screen items-start justify-center bg-[#f6f9fc] p-0 sm:items-center sm:p-4">
-      <div className="w-full max-w-150">
-        <div className="flex min-h-screen flex-col overflow-hidden bg-white sm:min-h-0 sm:flex-row sm:rounded-2xl sm:border sm:border-[#e3e8ee]">
+    <main className="flex min-h-screen items-start justify-center bg-[#f0f2f5] p-0 sm:items-center sm:p-5">
+      <div className="w-full max-w-140">
+        <div className="animate-in fade-in-0 zoom-in-95 flex min-h-screen flex-col overflow-hidden bg-white shadow-sm duration-300 sm:min-h-0 sm:flex-row sm:rounded-lg sm:shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
           {checkoutState.phase === "loading" && <CheckoutSkeleton />}
 
           {checkoutState.phase === "ready" && (
@@ -151,7 +150,7 @@ export default function CheckoutPage(): React.ReactNode {
                 />
               )}
 
-              <div className="flex-1">
+              <div className="flex min-w-0 flex-1 flex-col">
                 {outcome === null && (
                   <CheckoutHeader
                     merchantName={checkoutState.config.merchant.name}
@@ -162,8 +161,8 @@ export default function CheckoutPage(): React.ReactNode {
                 )}
 
                 <div
-                  className="min-h-72 px-5 pt-5 pb-8 transition-opacity duration-150 ease-in-out sm:px-8 sm:pt-6"
-                  style={{ opacity: methodState.transitioning ? 0 : 1 }}
+                  className="min-h-64 flex-1 px-5 pt-4 pb-6 transition-all duration-200 ease-in-out sm:px-6 sm:pt-5 sm:pb-6"
+                  style={{ opacity: methodState.transitioning ? 0 : 1, transform: methodState.transitioning ? "translateY(4px)" : "translateY(0)" }}
                 >
                   {outcome !== null ? (
                     <PaymentResult
@@ -190,10 +189,10 @@ export default function CheckoutPage(): React.ReactNode {
           )}
         </div>
 
-        <div className="mt-5 flex items-center justify-center gap-1.5 pb-4 sm:pb-0">
-          <Lock className="size-3 text-[#8898aa]/60" />
-          <span className="flex items-center gap-1.5 text-[11px] tracking-wide text-[#8898aa]">
-            Secured by <span className="text-primary font-semibold">Vestrapay</span>
+        <div className="mt-4 flex items-center justify-center gap-1.5 pb-4 sm:pb-0">
+          <Lock className="size-3 text-[#a0a3b1]/60" />
+          <span className="flex items-center gap-1.5 text-[11px] tracking-wide text-[#a0a3b1]">
+            Secured by <span className="font-semibold text-[#2d2572]">Vestrapay</span>
           </span>
         </div>
       </div>

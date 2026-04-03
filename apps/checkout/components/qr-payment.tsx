@@ -35,7 +35,7 @@ export function QRCodePayment({ amount }: PaymentComponentProps): React.ReactNod
             to pay <span className="font-semibold text-[#3c4257]">{amount}</span>.
           </p>
 
-          <div className="flex flex-col items-center rounded-xl border border-[#e3e8ee] bg-[#f6f9fc] p-5 sm:p-8">
+          <div className="flex flex-col items-center rounded-md border border-[#e3e8ee] bg-[#f6f9fc] p-5 sm:p-8">
             <div className="flex size-20 items-center justify-center rounded-2xl bg-[#edf2f7]">
               <QrCode className="size-10 text-[#a3acb9]" />
             </div>
@@ -43,7 +43,7 @@ export function QRCodePayment({ amount }: PaymentComponentProps): React.ReactNod
           </div>
 
           <Button
-            className="bg-primary text-primary-foreground hover:bg-primary/90 mt-2 h-11 w-full cursor-pointer rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 sm:h-12 sm:text-[15px]"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 mt-2 h-11 w-full cursor-pointer rounded-md text-sm font-semibold tracking-wide transition-all duration-200 sm:h-11"
             size="lg"
             onClick={handleGenerate}
             disabled={generating}
@@ -61,7 +61,7 @@ export function QRCodePayment({ amount }: PaymentComponentProps): React.ReactNod
             <span className="font-semibold text-[#3c4257]">{amount}</span>.
           </p>
 
-          <div className="animate-in fade-in-0 zoom-in-95 flex flex-col items-center rounded-xl border border-[#e3e8ee] bg-white p-5 duration-500 sm:p-8">
+          <div className="animate-in fade-in-0 zoom-in-95 flex flex-col items-center rounded-md border border-[#e3e8ee] bg-white p-5 duration-500 sm:p-8">
             <div className="relative size-36 sm:size-48">
               <svg viewBox="0 0 200 200" className="size-full text-[#3c4257]" fill="currentColor">
                 <rect x="10" y="10" width="50" height="50" rx="4" fillOpacity="0.9" />
@@ -91,7 +91,7 @@ export function QRCodePayment({ amount }: PaymentComponentProps): React.ReactNod
                 )}
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex size-12 items-center justify-center rounded-lg bg-white">
+                <div className="flex size-12 items-center justify-center rounded-md bg-white">
                   <span className="text-primary text-sm font-black tracking-tight">VP</span>
                 </div>
               </div>
