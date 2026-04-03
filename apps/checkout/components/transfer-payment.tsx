@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Copy, Check, Clock, Loader } from "@/components/icons";
 import { PaymentResult } from "@/components/payment-result";
 import { useClipboard } from "@/hooks/use-clipboard";
