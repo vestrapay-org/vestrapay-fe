@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Copy, Check, Clock, Loader } from "@/components/icons";
 import { PaymentResult } from "@/components/payment-result";
 import { useClipboard } from "@/hooks/use-clipboard";
@@ -72,6 +72,8 @@ interface TransferDetailsViewProps {
   readonly timeStr: string;
   readonly copied: boolean;
   readonly onCopy: (value: string) => void;
+  readonly onConfirm: () => void;
+  readonly confirming: boolean;
 }
 
 function TransferDetailsView({
@@ -80,6 +82,8 @@ function TransferDetailsView({
   timeStr,
   copied,
   onCopy,
+  onConfirm,
+  confirming,
 }: TransferDetailsViewProps): React.ReactNode {
   return (
     <div className="animate-in fade-in-0 slide-in-from-bottom-3 space-y-5 duration-400">
@@ -133,9 +137,25 @@ function TransferDetailsView({
 
       <CountdownBanner timeStr={timeStr} />
 
-      <div className="flex items-center justify-center gap-2 pt-1 text-xs text-[#8898aa]">
+      <button
+        type="button"
+        disabled={confirming}
+        onClick={onConfirm}
+        className="bg-primary text-primary-foreground hover:bg-primary/90 flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-semibold tracking-wide transition-all duration-200 hover:shadow-md disabled:opacity-40 sm:h-11"
+      >
+        {confirming ? (
+          <>
+            <Loader className="size-4 animate-spin" />
+            Confirming…
+          </>
+        ) : (
+          "I've sent the money"
+        )}
+      </button>
+
+      <div className="flex items-center justify-center gap-2 text-xs text-[#8898aa]">
         <Loader className="size-3.5 animate-spin" />
-        <span>Waiting for your transfer…</span>
+        <span>Listening for your transfer…</span>
       </div>
     </div>
   );
@@ -149,7 +169,9 @@ export function TransferPayment({
   onPaymentFailed,
 }: PaymentComponentProps): React.ReactNode {
   const [generating, setGenerating] = useState<boolean>(false);
+  const [confirming, setConfirming] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const didFetch = useRef(false);
   const [state, setState] = useState<TransferState>({
     status: "idle",
     details: null,
@@ -206,8 +228,15 @@ export function TransferPayment({
   }, [accessCode, reference]);
 
   useEffect((): void => {
+    if (didFetch.current) return;
+    didFetch.current = true;
     void handleGenerate();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleConfirm = useCallback((): void => {
+    setConfirming(true);
+    setTimeout((): void => setConfirming(false), 3000);
+  }, []);
 
   const handleClose = useCallback((): void => {
     setState({ status: "idle", details: null, socketReference: null, countdown: EXPIRY_SECONDS });
@@ -259,6 +288,8 @@ export function TransferPayment({
       timeStr={formatCountdown(state.countdown)}
       copied={copied}
       onCopy={copy}
+      onConfirm={handleConfirm}
+      confirming={confirming}
     />
   );
 }

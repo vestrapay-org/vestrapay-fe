@@ -4,9 +4,9 @@ export function NoTransaction(): React.ReactNode {
   return (
     <main className="flex min-h-screen items-start justify-center bg-[#f0f2f5] p-0 sm:items-center sm:p-5">
       <div className="w-full max-w-140">
-        <div className="animate-in fade-in-0 zoom-in-95 flex min-h-screen flex-col overflow-hidden bg-white duration-300 sm:min-h-0 sm:rounded-lg sm:shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+        <div className="animate-in fade-in-0 zoom-in-95 flex min-h-screen flex-col overflow-hidden bg-white shadow-sm duration-300 sm:min-h-96 sm:rounded-lg sm:shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
           <div className="flex flex-1 flex-col items-center justify-center px-8 py-16 text-center">
-            <img src="/vestrapay.svg" alt="Vestrapay" className="mb-8 h-5 w-auto opacity-70" />
+            <img src="/vestrapay.svg" alt="Vestrapay" className="mb-8 h-6 w-auto" />
 
             <div className="flex size-14 items-center justify-center rounded-full bg-red-50">
               <div className="flex size-10 items-center justify-center rounded-full bg-red-100">

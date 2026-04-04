@@ -4,11 +4,7 @@ const SKELETON_NAV_ITEMS = [
   { labelClass: "w-20" },
 ] as const satisfies ReadonlyArray<{ readonly labelClass: string }>;
 
-function SkeletonBlock({
-  className,
-}: {
-  readonly className: string;
-}): React.ReactNode {
+function SkeletonBlock({ className }: { readonly className: string }): React.ReactNode {
   return <div className={`skeleton-shimmer rounded ${className}`} />;
 }
 
@@ -20,10 +16,7 @@ function NavSkeleton(): React.ReactNode {
       </div>
       <div className="flex overflow-x-auto sm:mt-3 sm:flex-col sm:overflow-x-visible">
         {SKELETON_NAV_ITEMS.map(({ labelClass }, i) => (
-          <div
-            key={i}
-            className="flex shrink-0 items-center gap-2 px-3 py-2.5 sm:px-4"
-          >
+          <div key={i} className="flex shrink-0 items-center gap-2 px-3 py-2.5 sm:px-4">
             <SkeletonBlock className="size-5 rounded" />
             <SkeletonBlock className={`h-3 ${labelClass}`} />
           </div>
@@ -73,14 +66,7 @@ function CardFormSkeleton(): React.ReactNode {
 
         <SkeletonBlock className="mt-1 h-10 rounded-md sm:mt-1.5 sm:h-11" />
 
-        <div className="flex items-center justify-center gap-3 pt-1">
-          <SkeletonBlock className="h-2.5 w-14" />
-          <div className="flex items-center gap-2">
-            <SkeletonBlock className="h-4 w-8" />
-            <SkeletonBlock className="h-4 w-8" />
-            <SkeletonBlock className="h-3.5 w-10" />
-          </div>
-        </div>
+        <div className="flex items-center justify-center gap-3 pt-1"></div>
       </div>
     </div>
   );

@@ -42,8 +42,11 @@ export default function CheckoutPage(): React.ReactNode {
   const [outcome, setOutcome] = useState<PaymentOutcome>(null);
 
   const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didFetch = useRef(false);
 
   useEffect((): (() => void) => {
+    if (didFetch.current) return (): void => {};
+    didFetch.current = true;
     let cancelled = false;
 
     getCheckoutConfig(accessCode)

@@ -7,7 +7,7 @@ export function MethodNav({ methods, active, onSelect }: MethodNavProps): React.
   return (
     <nav className="shrink-0 border-b border-[#ebedf2] bg-[#fafbfc] sm:w-44 sm:border-r sm:border-b-0">
       <div className="hidden px-4 pt-5 pb-1 sm:block">
-        <img src="/vestrapay.svg" alt="Vestrapay" className="h-4.5 w-auto opacity-70" />
+        <img src="/vestrapay.svg" alt="Vestrapay" className="h-5 w-auto" />
       </div>
 
       <div className="flex overflow-x-auto sm:mt-3 sm:flex-col sm:overflow-x-visible">
