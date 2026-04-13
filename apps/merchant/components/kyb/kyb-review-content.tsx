@@ -20,6 +20,18 @@ function formatPhoneDisplay(digits: string): string {
   return `(${a}) ${b}-${c}`;
 }
 
+function isValidWebsite(value: string): boolean {
+  const v = value.trim();
+  if (!v) return false;
+  const href = /^https?:\/\//i.test(v) ? v : `https://${v}`;
+  try {
+    const parsed = new URL(href);
+    return parsed.hostname.includes(".");
+  } catch {
+    return false;
+  }
+}
+
 function ReviewBlock({
   title,
   icon: Icon,
@@ -68,7 +80,41 @@ function KybReviewContent() {
     .filter(Boolean)
     .join(", ");
 
+  const hasCompleteBusinessStep =
+    business.legalBusinessName.trim().length > 0 &&
+    business.businessType.length > 0 &&
+    business.registeredAddress.trim().length > 0 &&
+    business.city.trim().length > 0 &&
+    business.state.trim().length > 0 &&
+    business.phone.trim().length > 0 &&
+    isValidWebsite(business.website) &&
+    business.industry.length > 0;
+
+  const hasCompleteIdentityStep =
+    identity.fullLegalName.trim().length > 1 &&
+    identity.dateOfBirth.length > 0 &&
+    identity.nationality.trim().length > 1 &&
+    identity.idNumber.trim().length >= 4;
+
+  const routingDigits = settlement.routingNumber.replace(/\D/g, "");
+  const accountDigits = settlement.accountNumber.replace(/\D/g, "");
+  const hasCompleteSettlementStep =
+    settlement.bankName.trim().length > 1 &&
+    settlement.accountType.length > 0 &&
+    accountDigits.length >= 8 &&
+    routingDigits.length === 9;
+
+  const hasCompleteDocumentsStep =
+    documents.certFileName.length > 0 && documents.passportFileName.length > 0;
+
+  const canSubmitApplication =
+    hasCompleteBusinessStep &&
+    hasCompleteIdentityStep &&
+    hasCompleteSettlementStep &&
+    hasCompleteDocumentsStep;
+
   function handleSubmit() {
+    if (!canSubmitApplication) return;
     resetAll();
     router.push("/dashboard");
   }
@@ -160,7 +206,8 @@ function KybReviewContent() {
         <Button
           type="button"
           onClick={handleSubmit}
-          className="h-11 min-w-[12rem] rounded-lg border-0 bg-[var(--primary)] px-6 text-sm font-semibold text-white shadow-sm hover:brightness-105"
+          disabled={!canSubmitApplication}
+          className="h-11 min-w-[12rem] rounded-lg border-0 bg-[var(--primary)] px-6 text-sm font-semibold text-white shadow-sm hover:brightness-105 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45"
         >
           Submit application
           <ArrowRight className="ml-2 inline size-4 align-middle" aria-hidden />

@@ -12,7 +12,7 @@ function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-gray-200 bg-white text-slate-900 md:w-64">
+    <aside className="fixed top-0 left-0 z-20 flex h-screen w-60 shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-white text-slate-900 md:w-64">
       <div className="border-b border-gray-200 px-5 py-6">
         <p className="m-0 text-lg font-bold tracking-tight text-[var(--primary)]">Vestrapay</p>
         <p className="mt-1 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-gray-500">

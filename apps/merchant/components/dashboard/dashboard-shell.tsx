@@ -9,9 +9,9 @@ type DashboardShellProps = {
 
 function DashboardShell({ children }: DashboardShellProps) {
   return (
-    <div className="flex min-h-screen bg-[#f4f4f5]">
+    <div className="min-h-screen bg-[#f4f4f5]">
       <DashboardSidebar />
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="ml-60 flex min-h-screen min-w-0 flex-1 flex-col md:ml-64">
         <DashboardTopNav />
         <div className="flex-1 overflow-y-auto p-4 md:p-6">{children}</div>
       </div>
