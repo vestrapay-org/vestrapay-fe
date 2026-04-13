@@ -1,0 +1,79 @@
+"use client";
+
+import { Bell, HelpCircle } from "lucide-react";
+import { usePathname } from "next/navigation";
+import React, { useState } from "react";
+
+import { cn } from "@/lib/utils";
+
+import { getDashboardPageTitle } from "./nav-config";
+
+function DashboardTopNav() {
+  const pathname = usePathname();
+  const title = getDashboardPageTitle(pathname);
+  const [environment, setEnvironment] = useState<"sandbox" | "live">("sandbox");
+
+  return (
+    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-gray-200 bg-white px-4 md:px-6">
+      <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
+        <h1 className="m-0 truncate text-lg font-bold tracking-tight text-slate-900 md:text-xl">{title}</h1>
+
+        <div
+          className="hidden shrink-0 items-center rounded-full border border-gray-200 bg-gray-100 p-0.5 sm:flex"
+          role="group"
+          aria-label="Environment"
+        >
+          <button
+            type="button"
+            onClick={() => setEnvironment("sandbox")}
+            className={cn(
+              "rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+              environment === "sandbox"
+                ? "bg-[var(--primary)] text-white shadow-sm"
+                : "text-gray-600 hover:text-gray-900",
+            )}
+          >
+            Sandbox
+          </button>
+          <button
+            type="button"
+            onClick={() => setEnvironment("live")}
+            className={cn(
+              "rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+              environment === "live"
+                ? "bg-[var(--primary)] text-white shadow-sm"
+                : "text-gray-600 hover:text-gray-900",
+            )}
+          >
+            Live
+          </button>
+        </div>
+      </div>
+
+      <div className="flex shrink-0 items-center gap-1 md:gap-2">
+        <button
+          type="button"
+          className="flex size-10 items-center justify-center rounded-lg border-0 bg-transparent text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          aria-label="Notifications"
+        >
+          <Bell className="size-5" />
+        </button>
+        <button
+          type="button"
+          className="hidden items-center gap-2 rounded-lg border-0 bg-transparent px-2 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 sm:flex"
+        >
+          <HelpCircle className="size-5 shrink-0" aria-hidden />
+          Support
+        </button>
+        <div
+          className="ml-1 flex size-9 shrink-0 items-center justify-center rounded-full bg-[color:color-mix(in_oklch,var(--primary)_85%,white)] text-xs font-bold text-[var(--primary)]"
+          aria-hidden
+        >
+          VP
+        </div>
+      </div>
+    </header>
+  );
+}
+
+export { DashboardTopNav };

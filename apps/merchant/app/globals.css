@@ -1,0 +1,490 @@
+@config "../tailwind.config.ts";
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@vestrapay/ui/styles/globals.css";
+@source "./";
+@source "../components";
+@source "../layout";
+@source "../lib";
+@source "../../../packages/ui/src";
+
+:root {
+  --primary: #221f58;
+  --primary-foreground: #221f58;
+  --ring: #221f58;
+}
+
+.dark {
+  --primary: #221f58;
+  --primary-foreground: #221f58;
+  --ring: #221f58;
+}
+
+@layer base {
+  body {
+    min-height: 100vh;
+    background: #f4f4f5;
+  }
+}
+
+@layer components {
+  .merchant-auth-shell {
+    margin: 0 auto;
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    max-width: 72rem;
+    align-items: center;
+    padding: 2.5rem 1rem;
+  }
+
+  .merchant-auth-card {
+    width: 100%;
+    border-radius: 1.5rem;
+    border: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+    background: color-mix(in oklch, var(--card) 90%, transparent);
+    padding: 1.5rem;
+    box-shadow:
+      0 1px 1px 0 color-mix(in oklch, black 6%, transparent),
+      0 28px 56px -24px color-mix(in oklch, black 20%, transparent);
+    backdrop-filter: blur(10px);
+  }
+
+  .merchant-subtitle {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .merchant-auth-grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .merchant-auth-main {
+    order: 2;
+  }
+
+  .merchant-auth-aside {
+    order: 1;
+    border-radius: 1rem;
+    border: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--primary) 15%, transparent),
+      color-mix(in oklch, var(--primary) 8%, transparent),
+      var(--background)
+    );
+    padding: 1.5rem;
+  }
+
+  .merchant-eyebrow,
+  .merchant-aside-eyebrow {
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .merchant-title {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .merchant-aside-title {
+    margin: 1rem 0 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .merchant-aside-list {
+    margin: 1rem 0 0;
+    padding-left: 1rem;
+    color: var(--muted-foreground);
+    display: grid;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .merchant-space-top {
+    margin-top: 0.75rem;
+  }
+
+  .merchant-space-lg {
+    margin-top: 1.5rem;
+  }
+
+  .merchant-space-xl {
+    margin-top: 2rem;
+  }
+
+  .merchant-step-item {
+    border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
+    background: color-mix(in oklch, var(--background) 86%, transparent);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .merchant-step-item-current {
+    border-color: color-mix(in oklch, var(--primary) 50%, transparent);
+    background: color-mix(in oklch, var(--primary) 12%, transparent);
+  }
+
+  .merchant-step-badge {
+    border: 1px solid color-mix(in oklch, var(--border) 90%, transparent);
+    background: color-mix(in oklch, var(--muted) 90%, transparent);
+    color: var(--muted-foreground);
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .merchant-step-badge-active {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: color-mix(in oklch, var(--primary) 45%, transparent);
+  }
+
+  .merchant-step-label {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .vp-label {
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    display: inline-block;
+  }
+
+  .vp-input {
+    width: 100%;
+    height: 2.8rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--input);
+    background: var(--background);
+    color: var(--foreground);
+    padding: 0.6rem 0.75rem;
+    font-size: 0.95rem;
+    outline: none;
+  }
+
+  .vp-input::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  .vp-input:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 35%, transparent);
+  }
+
+  .vp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 0.75rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .vp-btn-md {
+    height: 2.5rem;
+    padding: 0 1rem;
+    font-size: 0.9rem;
+  }
+  .vp-btn-sm {
+    height: 2.2rem;
+    padding: 0 0.85rem;
+    font-size: 0.85rem;
+  }
+  .vp-btn-xs {
+    height: 2rem;
+    padding: 0 0.75rem;
+    font-size: 0.8rem;
+  }
+  .vp-btn-lg {
+    height: 2.9rem;
+    padding: 0 1.1rem;
+    font-size: 0.95rem;
+  }
+  .vp-btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  .vp-btn-icon-xs {
+    width: 2rem;
+    height: 2rem;
+  }
+  .vp-btn-icon-sm {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+  .vp-btn-icon-lg {
+    width: 2.9rem;
+    height: 2.9rem;
+  }
+
+  .vp-btn-default {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  .vp-btn-default:hover {
+    filter: brightness(0.95);
+  }
+  .vp-btn-outline {
+    background: var(--background);
+    color: var(--foreground);
+    border-color: var(--border);
+  }
+  .vp-btn-secondary {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+  }
+  .vp-btn-ghost {
+    background: transparent;
+    color: var(--foreground);
+    border-color: var(--border);
+  }
+  .vp-btn-destructive {
+    background: color-mix(in oklch, var(--destructive) 18%, transparent);
+    color: var(--destructive);
+  }
+  .vp-btn-link {
+    background: transparent;
+    color: var(--primary);
+    text-decoration: underline;
+  }
+}
+
+@media (min-width: 768px) {
+  .merchant-auth-shell {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .merchant-auth-card {
+    padding: 2.5rem;
+  }
+
+  .merchant-subtitle {
+    font-size: 1rem;
+  }
+
+  .merchant-auth-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+
+  .merchant-auth-main {
+    order: 1;
+  }
+
+  .merchant-auth-aside {
+    order: 2;
+    padding: 2rem;
+  }
+}
+
+.merchant-auth-reference {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 60vw 40vw;
+  background: #ececec;
+}
+
+.merchant-auth-reference__left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.merchant-auth-reference__form-wrap {
+  width: 100%;
+  max-width: 21rem;
+}
+
+.merchant-auth-reference__logo {
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 999px;
+  margin: 0 auto 1.15rem;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: color-mix(in oklch, var(--primary) 18%, white);
+}
+
+.merchant-auth-reference__title {
+  margin: 0;
+  text-align: center;
+  font-size: 2.15rem;
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.merchant-auth-reference__helper {
+  margin: 0.5rem 0 0;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.merchant-auth-reference__link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.merchant-auth-reference__form {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.merchant-auth-reference__input {
+  height: 4rem;
+  border: 1px solid #8792a0;
+  border-radius: 0.75rem;
+  background: #e9eaec;
+  color: #5b6572;
+  font-size: 16px;
+  font-weight: 500;
+  padding-left: 1.45rem;
+  padding-right: 1.45rem;
+  box-shadow: none;
+}
+
+.merchant-auth-reference__input::placeholder {
+  color: #5b6572;
+  opacity: 1;
+}
+
+.merchant-auth-reference__password-wrap {
+  position: relative;
+}
+
+.merchant-auth-reference__password-wrap .merchant-auth-reference__input {
+  padding-right: 2.4rem;
+}
+
+.merchant-auth-reference__eye-button {
+  position: absolute;
+  right: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #7a7a7a;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.merchant-auth-reference__meta-row {
+  margin-top: 0.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.merchant-auth-reference__checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.merchant-auth-reference__forgot {
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.merchant-auth-reference__button {
+  width: 8.2rem;
+  margin: 0.7rem auto 0;
+  border-radius: 999px;
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+
+.merchant-auth-reference__divider {
+  margin-top: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.merchant-auth-reference__divider span {
+  height: 1px;
+  flex: 1;
+  background: #d6d6d6;
+}
+
+.merchant-auth-reference__divider p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.merchant-auth-reference__sso-btn {
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.merchant-auth-reference__right {
+  display: block;
+  background-color: #2c0f4c;
+  background-image:
+    radial-gradient(
+      circle at 0 0,
+      color-mix(in oklch, var(--primary) 95%, white) 0 58px,
+      transparent 59px
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      color-mix(in oklch, var(--primary) 95%, white) 0 58px,
+      transparent 59px
+    );
+  background-size: 122px 122px;
+  background-position:
+    0 0,
+    0 0;
+}
+
+@media (min-width: 1024px) {
+  .merchant-auth-reference {
+    grid-template-columns: 60vw 40vw;
+  }
+}
