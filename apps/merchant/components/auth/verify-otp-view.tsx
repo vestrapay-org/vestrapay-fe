@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { AuthPageLayout } from "@/layout/auth-page-layout";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,19 @@ function VerifyOtpView() {
   const emailDisplay = emailParam ? decodeURIComponent(emailParam) : null;
 
   const [otp, setOtp] = useState("");
-  const [resent, setResent] = useState(false);
+  const [secondsRemaining, setSecondsRemaining] = useState(10);
+
+  useEffect(() => {
+    if (secondsRemaining <= 0) return;
+    const timer = window.setInterval(() => {
+      setSecondsRemaining((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [secondsRemaining]);
+
+  function handleResend() {
+    setSecondsRemaining(30);
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,14 +54,16 @@ function VerifyOtpView() {
         )
       }
       footer={
-        <p className="m-0">
-          Wrong email? <Link href="/register">Go back and edit</Link>
-          {" · "}
-          <button type="button" onClick={() => setResent(true)}>
+        secondsRemaining > 0 ? (
+          <p className="m-0 text-sm text-gray-600">
+            Resend code in{" "}
+            <span className="font-semibold text-slate-900">{secondsRemaining.toString().padStart(2, "0")}s</span>
+          </p>
+        ) : (
+          <button type="button" onClick={handleResend}>
             Resend code
           </button>
-          {resent ? <span className="ml-1 text-emerald-600">(Demo: request recorded)</span> : null}
-        </p>
+        )
       }
     >
       <form className="grid gap-4" onSubmit={handleSubmit}>
