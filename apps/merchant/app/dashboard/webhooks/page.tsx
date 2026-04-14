@@ -1,7 +1,7 @@
 import React from "react";
 
-import { DashboardSectionPlaceholder } from "@/components/dashboard/dashboard-section-placeholder";
+import { WebhooksView } from "@/components/webhooks/webhooks-view";
 
 export default function WebhooksPage() {
-  return <DashboardSectionPlaceholder title="Webhooks" />;
+  return <WebhooksView />;
 }
