@@ -5,6 +5,10 @@ node_modules
 .next/
 out/
 
+# Accidental nested monorepo clone (e.g. wrong remote / pull into apps/merchant)
+apps/merchant/apps/
+apps/merchant/packages/
+
 # production
 build
 dist
@@ -31,3 +35,5 @@ pnpm-debug.log*
 
 # typescript
 *.tsbuildinfo
+
+.pnpm-store/
