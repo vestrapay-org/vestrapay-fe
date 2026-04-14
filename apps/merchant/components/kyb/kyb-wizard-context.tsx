@@ -5,12 +5,19 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 export type KybBusinessData = {
   legalBusinessName: string;
   businessType: string;
+  businessRegistrationNumber: string;
+  taxIdentificationNumber: string;
   registeredAddress: string;
+  country: string;
   city: string;
   state: string;
   phone: string;
   website: string;
   industry: string;
+  businessRegistrationCertificateFileName: string;
+  businessRegistrationCertificateFileSize: string;
+  businessProofOfAddressFileName: string;
+  businessProofOfAddressFileSize: string;
 };
 
 export type KybIdentityData = {
@@ -37,12 +44,19 @@ export type KybDocumentsData = {
 const emptyBusiness: KybBusinessData = {
   legalBusinessName: "",
   businessType: "",
+  businessRegistrationNumber: "",
+  taxIdentificationNumber: "",
   registeredAddress: "",
+  country: "",
   city: "",
   state: "",
   phone: "",
   website: "",
   industry: "",
+  businessRegistrationCertificateFileName: "",
+  businessRegistrationCertificateFileSize: "",
+  businessProofOfAddressFileName: "",
+  businessProofOfAddressFileSize: "",
 };
 
 const emptyIdentity: KybIdentityData = {

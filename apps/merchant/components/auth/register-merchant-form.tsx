@@ -8,14 +8,14 @@ import { ArrowRight, Check, ChevronDown, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const BUSINESS_CATEGORIES = [
-  "Retail & e-commerce",
-  "Food & hospitality",
-  "Professional services",
-  "Technology & SaaS",
-  "Healthcare",
-  "Education",
-  "Logistics & transport",
+const COUNTRIES = [
+  "United States",
+  "United Kingdom",
+  "Nigeria",
+  "Kenya",
+  "South Africa",
+  "Canada",
+  "Germany",
   "Other",
 ] as const;
 
@@ -78,7 +78,7 @@ function RegisterMerchantForm() {
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [businessCategory, setBusinessCategory] = useState("");
+  const [country, setCountry] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -97,7 +97,7 @@ function RegisterMerchantForm() {
       isValidEmailFormat(emailTrim) &&
       !emailError &&
       phone.trim().length > 0 &&
-      businessCategory.length > 0 &&
+      country.length > 0 &&
       score === 4 &&
       password.length > 0 &&
       password === confirmPassword &&
@@ -107,7 +107,7 @@ function RegisterMerchantForm() {
     businessName,
     email,
     phone,
-    businessCategory,
+    country,
     password,
     confirmPassword,
     termsAccepted,
@@ -217,24 +217,20 @@ function RegisterMerchantForm() {
           />
         </div>
         <div>
-          <FieldLabel>Business category</FieldLabel>
+          <FieldLabel>Country</FieldLabel>
           <div className="relative">
             <select
-              id="businessCategory"
-              name="businessCategory"
+              id="country"
+              name="country"
               required
-              value={businessCategory}
-              onChange={(e) => setBusinessCategory(e.target.value)}
-              className={cn(
-                fieldInputClass,
-                "h-11 appearance-none pr-10",
-                businessCategory ? "text-gray-900" : "text-gray-400",
-              )}
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className={cn(fieldInputClass, "h-11 appearance-none pr-10", country ? "text-gray-900" : "text-gray-400")}
             >
               <option value="" disabled>
-                Select category
+                Select country
               </option>
-              {BUSINESS_CATEGORIES.map((c) => (
+              {COUNTRIES.map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>

@@ -58,7 +58,7 @@ function KybVerificationSidebar({ variant = "default" }: KybVerificationSidebarP
         <section className="rounded-xl bg-[var(--primary)] p-5 text-white shadow-md">
           <h2 className="m-0 text-base font-semibold">Need assistance?</h2>
           <p className="mt-2 text-sm leading-relaxed text-white/85">
-            Our compliance team can help you complete KYB requirements and interpret document requests.
+            Our compliance team is ready to help you navigate the verification standards.
           </p>
           <Link
             href="#"
@@ -70,6 +70,12 @@ function KybVerificationSidebar({ variant = "default" }: KybVerificationSidebarP
           </Link>
         </section>
       )}
+
+      {!isReview ? (
+        <section className="overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-r from-[#102a58] via-[#1e5b8f] to-[#6fb9d8] p-0 shadow-sm">
+          <div className="h-28 w-full bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.35),transparent_36%),radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.2),transparent_30%),linear-gradient(130deg,rgba(7,18,45,0.9),rgba(18,120,165,0.65))]" />
+        </section>
+      ) : null}
     </aside>
   );
 }

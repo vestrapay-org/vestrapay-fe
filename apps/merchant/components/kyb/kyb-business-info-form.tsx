@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { ArrowLeft, ChevronDown, CloudUpload } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,14 +19,14 @@ const BUSINESS_TYPES = [
   "Other",
 ] as const;
 
-const INDUSTRIES = [
-  "Financial services",
+const BUSINESS_CATEGORIES = [
   "Retail & e-commerce",
+  "Food & hospitality",
+  "Professional services",
   "Technology & SaaS",
   "Healthcare",
-  "Food & hospitality",
-  "Logistics",
-  "Professional services",
+  "Education",
+  "Logistics & transport",
   "Other",
 ] as const;
 
@@ -52,6 +52,17 @@ function sanitizeAddress(value: string): string {
   return value.replace(/[^\w\s\-#.,/'&()]/gi, "");
 }
 
+function sanitizeAlphaNumeric(value: string): string {
+  return value.replace(/[^a-zA-Z0-9-]/g, "");
+}
+
+function formatFileSize(size: number): string {
+  if (size < 1024) return `${size} B`;
+  const kb = size / 1024;
+  if (kb < 1024) return `${kb.toFixed(1)} KB`;
+  return `${(kb / 1024).toFixed(2)} MB`;
+}
+
 function isValidWebsite(value: string): boolean {
   const v = value.trim();
   if (!v) return false;
@@ -72,12 +83,16 @@ function KybBusinessInfoForm() {
     return (
       business.legalBusinessName.trim().length > 0 &&
       business.businessType.length > 0 &&
+      business.businessRegistrationNumber.trim().length > 0 &&
+      business.taxIdentificationNumber.trim().length > 0 &&
       business.registeredAddress.trim().length > 0 &&
       business.city.trim().length > 0 &&
       business.state.trim().length > 0 &&
       business.phone.trim().length > 0 &&
       isValidWebsite(business.website) &&
-      business.industry.length > 0
+      business.industry.length > 0 &&
+      business.businessRegistrationCertificateFileName.length > 0 &&
+      business.businessProofOfAddressFileName.length > 0
     );
   }, [business]);
 
@@ -141,6 +156,40 @@ function KybBusinessInfoForm() {
             </select>
             <ChevronDown className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-500" />
           </div>
+        </div>
+
+        <div>
+          <label htmlFor="businessRegistrationNumber" className={labelClass}>
+            Business registration number
+          </label>
+          <input
+            id="businessRegistrationNumber"
+            name="businessRegistrationNumber"
+            required
+            placeholder="Enter registration number"
+            className={inputClass}
+            value={business.businessRegistrationNumber}
+            onChange={(e) =>
+              setBusiness((prev) => ({ ...prev, businessRegistrationNumber: sanitizeAlphaNumeric(e.target.value) }))
+            }
+          />
+        </div>
+
+        <div>
+          <label htmlFor="taxIdentificationNumber" className={labelClass}>
+            Tax identity number (TIN)
+          </label>
+          <input
+            id="taxIdentificationNumber"
+            name="taxIdentificationNumber"
+            required
+            placeholder="Enter TIN"
+            className={inputClass}
+            value={business.taxIdentificationNumber}
+            onChange={(e) =>
+              setBusiness((prev) => ({ ...prev, taxIdentificationNumber: sanitizeAlphaNumeric(e.target.value) }))
+            }
+          />
         </div>
 
         <div>
@@ -234,7 +283,7 @@ function KybBusinessInfoForm() {
 
         <div>
           <label htmlFor="industry" className={labelClass}>
-            Industry category
+            Business category
           </label>
           <div className="relative">
             <select
@@ -249,8 +298,8 @@ function KybBusinessInfoForm() {
                 business.industry ? "text-gray-900" : "text-gray-400",
               )}
             >
-              <option value="">Select industry…</option>
-              {INDUSTRIES.map((i) => (
+              <option value="">Select category…</option>
+              {BUSINESS_CATEGORIES.map((i) => (
                 <option key={i} value={i}>
                   {i}
                 </option>
@@ -258,6 +307,78 @@ function KybBusinessInfoForm() {
             </select>
             <ChevronDown className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-500" />
           </div>
+        </div>
+
+        <div>
+          <label htmlFor="businessRegistrationCertificateUpload" className={labelClass}>
+            Business registration certificate
+          </label>
+          <label
+            htmlFor="businessRegistrationCertificateUpload"
+            className="group flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center transition-colors hover:border-gray-400 hover:bg-gray-100"
+          >
+            <CloudUpload className="size-5 text-gray-400" aria-hidden />
+            <p className="mt-2 text-sm font-semibold text-slate-700">Click to upload or drag and drop</p>
+            <p className="mt-1 text-xs text-gray-500">PDF, JPG or PNG (max. 5MB)</p>
+            {business.businessRegistrationCertificateFileName ? (
+              <p className="mt-2 text-xs font-medium text-[var(--primary)]">
+                {business.businessRegistrationCertificateFileName}
+                {business.businessRegistrationCertificateFileSize
+                  ? ` · ${business.businessRegistrationCertificateFileSize}`
+                  : ""}
+              </p>
+            ) : null}
+          </label>
+          <input
+            id="businessRegistrationCertificateUpload"
+            type="file"
+            className="sr-only"
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setBusiness((prev) => ({
+                ...prev,
+                businessRegistrationCertificateFileName: file.name,
+                businessRegistrationCertificateFileSize: formatFileSize(file.size),
+              }));
+            }}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="businessProofOfAddressUpload" className={labelClass}>
+            Business proof of address
+          </label>
+          <label
+            htmlFor="businessProofOfAddressUpload"
+            className="group flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center transition-colors hover:border-gray-400 hover:bg-gray-100"
+          >
+            <CloudUpload className="size-5 text-gray-400" aria-hidden />
+            <p className="mt-2 text-sm font-semibold text-slate-700">Click to upload or drag and drop</p>
+            <p className="mt-1 text-xs text-gray-500">Utility bill or bank statement (PDF, JPG, PNG max. 5MB)</p>
+            {business.businessProofOfAddressFileName ? (
+              <p className="mt-2 text-xs font-medium text-[var(--primary)]">
+                {business.businessProofOfAddressFileName}
+                {business.businessProofOfAddressFileSize ? ` · ${business.businessProofOfAddressFileSize}` : ""}
+              </p>
+            ) : null}
+          </label>
+          <input
+            id="businessProofOfAddressUpload"
+            type="file"
+            className="sr-only"
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setBusiness((prev) => ({
+                ...prev,
+                businessProofOfAddressFileName: file.name,
+                businessProofOfAddressFileSize: formatFileSize(file.size),
+              }));
+            }}
+          />
         </div>
 
         <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:items-center sm:justify-between">

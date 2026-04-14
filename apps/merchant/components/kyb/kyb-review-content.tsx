@@ -83,12 +83,16 @@ function KybReviewContent() {
   const hasCompleteBusinessStep =
     business.legalBusinessName.trim().length > 0 &&
     business.businessType.length > 0 &&
+    business.businessRegistrationNumber.trim().length > 0 &&
+    business.taxIdentificationNumber.trim().length > 0 &&
     business.registeredAddress.trim().length > 0 &&
     business.city.trim().length > 0 &&
     business.state.trim().length > 0 &&
     business.phone.trim().length > 0 &&
     isValidWebsite(business.website) &&
-    business.industry.length > 0;
+    business.industry.length > 0 &&
+    business.businessRegistrationCertificateFileName.length > 0 &&
+    business.businessProofOfAddressFileName.length > 0;
 
   const hasCompleteIdentityStep =
     identity.fullLegalName.trim().length > 1 &&
@@ -116,7 +120,7 @@ function KybReviewContent() {
   function handleSubmit() {
     if (!canSubmitApplication) return;
     resetAll();
-    router.push("/dashboard");
+    router.push("/dashboard/kyb/submitted");
   }
 
   return (
@@ -132,10 +136,24 @@ function KybReviewContent() {
         <ReviewBlock title="Business information" icon={Building2} editHref="/dashboard/kyb">
           <FieldRow label="Legal business name" value={business.legalBusinessName} />
           <FieldRow label="Business type" value={business.businessType} />
+          <FieldRow label="Registration number" value={business.businessRegistrationNumber} />
+          <FieldRow label="Tax identification number" value={business.taxIdentificationNumber} />
           <FieldRow label="Registered address" value={registeredAddressLine} />
           <FieldRow label="Phone number" value={formatPhoneDisplay(business.phone.replace(/\D/g, ""))} />
           <FieldRow label="Website" value={business.website} />
-          {business.industry ? <FieldRow label="Industry" value={business.industry} /> : null}
+          {business.industry ? <FieldRow label="Business category" value={business.industry} /> : null}
+          {business.businessRegistrationCertificateFileName ? (
+            <FieldRow
+              label="Business registration certificate"
+              value={`${business.businessRegistrationCertificateFileName}${business.businessRegistrationCertificateFileSize ? ` · ${business.businessRegistrationCertificateFileSize}` : ""}`}
+            />
+          ) : null}
+          {business.businessProofOfAddressFileName ? (
+            <FieldRow
+              label="Business proof of address"
+              value={`${business.businessProofOfAddressFileName}${business.businessProofOfAddressFileSize ? ` · ${business.businessProofOfAddressFileSize}` : ""}`}
+            />
+          ) : null}
         </ReviewBlock>
 
         <ReviewBlock title="Identity verification" icon={User} editHref="/dashboard/kyb/identity">
