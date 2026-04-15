@@ -32,7 +32,7 @@ function KybVerificationSidebar({ variant = "default" }: KybVerificationSidebarP
               <p className="m-0 text-xs font-bold text-gray-600 uppercase">Tier 2 KYB</p>
               <p className="mt-2 text-sm leading-relaxed text-gray-700">
                 Full access for unlimited processing. Completion of{" "}
-                <span className="font-semibold text-slate-900">all 5 steps</span> required.
+                <span className="font-semibold text-slate-900">all 4 steps</span> required.
               </p>
             </div>
           </div>

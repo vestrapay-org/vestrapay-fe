@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
-import { ArrowLeft, ChevronDown, CloudUpload } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { KybDocumentUploadField } from "./kyb-document-upload-field";
 import { useKybWizard } from "./kyb-wizard-context";
 
 const BUSINESS_TYPES = [
@@ -313,36 +314,26 @@ function KybBusinessInfoForm() {
           <label htmlFor="businessRegistrationCertificateUpload" className={labelClass}>
             Business registration certificate
           </label>
-          <label
-            htmlFor="businessRegistrationCertificateUpload"
-            className="group flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center transition-colors hover:border-gray-400 hover:bg-gray-100"
-          >
-            <CloudUpload className="size-5 text-gray-400" aria-hidden />
-            <p className="mt-2 text-sm font-semibold text-slate-700">Click to upload or drag and drop</p>
-            <p className="mt-1 text-xs text-gray-500">PDF, JPG or PNG (max. 5MB)</p>
-            {business.businessRegistrationCertificateFileName ? (
-              <p className="mt-2 text-xs font-medium text-[var(--primary)]">
-                {business.businessRegistrationCertificateFileName}
-                {business.businessRegistrationCertificateFileSize
-                  ? ` · ${business.businessRegistrationCertificateFileSize}`
-                  : ""}
-              </p>
-            ) : null}
-          </label>
-          <input
-            id="businessRegistrationCertificateUpload"
-            type="file"
-            className="sr-only"
-            accept=".pdf,.jpg,.jpeg,.png"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
+          <KybDocumentUploadField
+            inputId="businessRegistrationCertificateUpload"
+            hint="PDF, JPG or PNG · max 5MB · click or drag to upload"
+            fileName={business.businessRegistrationCertificateFileName}
+            fileSize={business.businessRegistrationCertificateFileSize}
+            onSelect={(file) =>
               setBusiness((prev) => ({
                 ...prev,
                 businessRegistrationCertificateFileName: file.name,
                 businessRegistrationCertificateFileSize: formatFileSize(file.size),
-              }));
-            }}
+              }))
+            }
+            onClear={() =>
+              setBusiness((prev) => ({
+                ...prev,
+                businessRegistrationCertificateFileName: "",
+                businessRegistrationCertificateFileSize: "",
+              }))
+            }
+            emptyIcon="cloud"
           />
         </div>
 
@@ -350,34 +341,26 @@ function KybBusinessInfoForm() {
           <label htmlFor="businessProofOfAddressUpload" className={labelClass}>
             Business proof of address
           </label>
-          <label
-            htmlFor="businessProofOfAddressUpload"
-            className="group flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center transition-colors hover:border-gray-400 hover:bg-gray-100"
-          >
-            <CloudUpload className="size-5 text-gray-400" aria-hidden />
-            <p className="mt-2 text-sm font-semibold text-slate-700">Click to upload or drag and drop</p>
-            <p className="mt-1 text-xs text-gray-500">Utility bill or bank statement (PDF, JPG, PNG max. 5MB)</p>
-            {business.businessProofOfAddressFileName ? (
-              <p className="mt-2 text-xs font-medium text-[var(--primary)]">
-                {business.businessProofOfAddressFileName}
-                {business.businessProofOfAddressFileSize ? ` · ${business.businessProofOfAddressFileSize}` : ""}
-              </p>
-            ) : null}
-          </label>
-          <input
-            id="businessProofOfAddressUpload"
-            type="file"
-            className="sr-only"
-            accept=".pdf,.jpg,.jpeg,.png"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
+          <KybDocumentUploadField
+            inputId="businessProofOfAddressUpload"
+            hint="Utility bill or bank statement · PDF, JPG, PNG · max 5MB"
+            fileName={business.businessProofOfAddressFileName}
+            fileSize={business.businessProofOfAddressFileSize}
+            onSelect={(file) =>
               setBusiness((prev) => ({
                 ...prev,
                 businessProofOfAddressFileName: file.name,
                 businessProofOfAddressFileSize: formatFileSize(file.size),
-              }));
-            }}
+              }))
+            }
+            onClear={() =>
+              setBusiness((prev) => ({
+                ...prev,
+                businessProofOfAddressFileName: "",
+                businessProofOfAddressFileSize: "",
+              }))
+            }
+            emptyIcon="cloud"
           />
         </div>
 

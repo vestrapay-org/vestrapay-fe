@@ -20,11 +20,29 @@ export type KybBusinessData = {
   businessProofOfAddressFileSize: string;
 };
 
-export type KybIdentityData = {
-  fullLegalName: string;
+export type KybOwnerFields = {
+  legalFirstName: string;
+  legalLastName: string;
   dateOfBirth: string;
-  nationality: string;
-  idNumber: string;
+  ssnTinLast4: string;
+  personalEmail: string;
+  personalPhone: string;
+  residentialStreet: string;
+  residentialCity: string;
+  residentialState: string;
+  residentialPostalCode: string;
+  residentialCountry: string;
+  citizenshipCountry: string;
+  idDocumentType: string;
+  idDocumentFileName: string;
+  idDocumentFileSize: string;
+  proofOfAddressFileName: string;
+  proofOfAddressFileSize: string;
+};
+
+export type KybIdentityData = {
+  primary: KybOwnerFields;
+  additional: KybOwnerFields | null;
 };
 
 export type KybSettlementData = {
@@ -34,12 +52,27 @@ export type KybSettlementData = {
   routingNumber: string;
 };
 
-export type KybDocumentsData = {
-  certFileName: string;
-  certFileSize: string;
-  passportFileName: string;
-  passportFileSize: string;
-};
+function createEmptyKybOwnerFields(): KybOwnerFields {
+  return {
+    legalFirstName: "",
+    legalLastName: "",
+    dateOfBirth: "",
+    ssnTinLast4: "",
+    personalEmail: "",
+    personalPhone: "",
+    residentialStreet: "",
+    residentialCity: "",
+    residentialState: "",
+    residentialPostalCode: "",
+    residentialCountry: "",
+    citizenshipCountry: "",
+    idDocumentType: "",
+    idDocumentFileName: "",
+    idDocumentFileSize: "",
+    proofOfAddressFileName: "",
+    proofOfAddressFileSize: "",
+  };
+}
 
 const emptyBusiness: KybBusinessData = {
   legalBusinessName: "",
@@ -60,10 +93,8 @@ const emptyBusiness: KybBusinessData = {
 };
 
 const emptyIdentity: KybIdentityData = {
-  fullLegalName: "",
-  dateOfBirth: "",
-  nationality: "",
-  idNumber: "",
+  primary: createEmptyKybOwnerFields(),
+  additional: null,
 };
 
 const emptySettlement: KybSettlementData = {
@@ -73,13 +104,6 @@ const emptySettlement: KybSettlementData = {
   routingNumber: "",
 };
 
-const emptyDocuments: KybDocumentsData = {
-  certFileName: "",
-  certFileSize: "",
-  passportFileName: "",
-  passportFileSize: "",
-};
-
 type KybWizardContextValue = {
   business: KybBusinessData;
   setBusiness: React.Dispatch<React.SetStateAction<KybBusinessData>>;
@@ -87,8 +111,6 @@ type KybWizardContextValue = {
   setIdentity: React.Dispatch<React.SetStateAction<KybIdentityData>>;
   settlement: KybSettlementData;
   setSettlement: React.Dispatch<React.SetStateAction<KybSettlementData>>;
-  documents: KybDocumentsData;
-  setDocuments: React.Dispatch<React.SetStateAction<KybDocumentsData>>;
   resetAll: () => void;
 };
 
@@ -98,13 +120,11 @@ function KybWizardProvider({ children }: { children: React.ReactNode }) {
   const [business, setBusiness] = useState<KybBusinessData>(emptyBusiness);
   const [identity, setIdentity] = useState<KybIdentityData>(emptyIdentity);
   const [settlement, setSettlement] = useState<KybSettlementData>(emptySettlement);
-  const [documents, setDocuments] = useState<KybDocumentsData>(emptyDocuments);
 
   const resetAll = useCallback(() => {
     setBusiness(emptyBusiness);
     setIdentity(emptyIdentity);
     setSettlement(emptySettlement);
-    setDocuments(emptyDocuments);
   }, []);
 
   const value = useMemo(
@@ -115,11 +135,9 @@ function KybWizardProvider({ children }: { children: React.ReactNode }) {
       setIdentity,
       settlement,
       setSettlement,
-      documents,
-      setDocuments,
       resetAll,
     }),
-    [business, identity, settlement, documents, resetAll],
+    [business, identity, settlement, resetAll],
   );
 
   return <KybWizardContext.Provider value={value}>{children}</KybWizardContext.Provider>;
@@ -139,5 +157,5 @@ export {
   emptyBusiness,
   emptyIdentity,
   emptySettlement,
-  emptyDocuments,
+  createEmptyKybOwnerFields,
 };

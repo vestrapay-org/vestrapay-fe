@@ -8,8 +8,7 @@ const STEPS = [
   { id: 1, label: "Business info", href: "/dashboard/kyb" },
   { id: 2, label: "Identity", href: "/dashboard/kyb/identity" },
   { id: 3, label: "Settlement", href: "/dashboard/kyb/settlement" },
-  { id: 4, label: "Documents", href: "/dashboard/kyb/documents" },
-  { id: 5, label: "Review", href: "/dashboard/kyb/review" },
+  { id: 4, label: "Review", href: "/dashboard/kyb/review" },
 ] as const;
 
 type KybStepperProps = {

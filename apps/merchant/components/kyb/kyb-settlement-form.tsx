@@ -44,7 +44,7 @@ function KybSettlementForm() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!canSubmit) return;
-    router.push("/dashboard/kyb/documents");
+    router.push("/dashboard/kyb/review");
   }
 
   return (

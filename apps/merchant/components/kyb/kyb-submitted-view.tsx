@@ -2,87 +2,94 @@
 
 import Link from "next/link";
 import React from "react";
-import { ArrowRight, ClipboardList, ExternalLink, LayoutDashboard, Sparkles } from "lucide-react";
+import { ArrowRight, ClipboardList, Clock, Code2, ExternalLink } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
+const NAVY = "#08083a";
+const ICON_WRAP = "#fff8e6";
+const AMBER_ICON = "#d97706";
+const TIMELINE_CARD = "#f4f4f4";
+const BODY_GRAY = "#666666";
+
 function KybSubmittedView() {
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:items-start">
-      <section className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm md:p-12">
-        <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-          <div
-            className="flex size-14 items-center justify-center rounded-xl bg-indigo-50 text-[var(--primary)] shadow-sm ring-1 ring-indigo-100"
-            aria-hidden
-          >
-            <ClipboardList className="size-7" strokeWidth={2} />
+    <div className="flex justify-center py-4 md:py-8">
+      <section
+        className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_50px_-24px_rgba(8,8,58,0.18)] md:px-10 md:py-12"
+        style={{ color: NAVY }}
+      >
+        <div className="flex flex-col items-center text-center">
+          <div className="relative inline-flex rounded-xl p-4" style={{ backgroundColor: ICON_WRAP }} aria-hidden>
+            <ClipboardList className="size-10" strokeWidth={1.75} style={{ color: AMBER_ICON }} />
+            <span className="absolute -bottom-0.5 -right-0.5 flex size-7 items-center justify-center rounded-lg bg-[#fff8e6] shadow-sm ring-2 ring-white">
+              <Clock className="size-4" strokeWidth={2.25} style={{ color: AMBER_ICON }} />
+            </span>
           </div>
 
-          <h1 className="mt-6 text-2xl font-bold tracking-tight text-[#0a0c2c] md:text-3xl">
-            We&apos;ve received your verification request
+          <h1 className="mt-6 text-2xl font-bold tracking-tight md:text-[1.65rem]" style={{ color: NAVY }}>
+            Verification Under Review
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-gray-600 md:text-base">
-            Thank you for submitting your details. Our team will review your application and reach out if we need
-            anything else. You can keep using your dashboard while we work through this in the background.
+          <p className="mt-3 max-w-lg text-sm leading-relaxed md:text-[0.95rem]" style={{ color: BODY_GRAY }}>
+            Thank you for submitting your application. Our compliance team is currently reviewing your documents to
+            ensure everything is in order.
           </p>
 
-          <div className="mt-10 grid w-full gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border border-gray-100 bg-gray-50/90 p-5 text-left shadow-sm">
-              <div className="flex size-10 items-center justify-center rounded-md bg-white text-[var(--primary)] shadow-sm ring-1 ring-gray-100">
-                <LayoutDashboard className="size-5" aria-hidden />
-              </div>
-              <h2 className="mt-4 text-xs font-bold tracking-[0.12em] text-[#0a0c2c]">YOUR DASHBOARD</h2>
-              <p className="mt-2 text-sm text-gray-600">Explore tools, transactions, and settings while we review.</p>
+          <div className="mt-8 grid w-full gap-4 sm:grid-cols-2 sm:gap-5">
+            <div
+              className="rounded-xl p-5 text-left shadow-sm ring-1 ring-gray-100"
+              style={{ backgroundColor: TIMELINE_CARD }}
+            >
+              <Clock className="size-5 shrink-0" strokeWidth={2} style={{ color: NAVY }} aria-hidden />
+              <h2 className="mt-3 text-base font-bold" style={{ color: NAVY }}>
+                Verification Timeline
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed" style={{ color: BODY_GRAY }}>
+                Verification typically takes{" "}
+                <strong className="font-bold" style={{ color: BODY_GRAY }}>
+                  3-5 business days
+                </strong>
+                . We&apos;ll email you once it&apos;s complete.
+              </p>
             </div>
-            <div className="rounded-lg border border-gray-100 bg-gray-50/90 p-5 text-left shadow-sm">
-              <div className="flex size-10 items-center justify-center rounded-md bg-white text-[var(--primary)] shadow-sm ring-1 ring-gray-100">
-                <Sparkles className="size-5" aria-hidden />
-              </div>
-              <h2 className="mt-4 text-xs font-bold tracking-[0.12em] text-[#0a0c2c]">WHAT HAPPENS NEXT</h2>
-              <p className="mt-2 text-sm text-gray-600">We&apos;ll email you if we need additional documents or clarifications.</p>
+
+            <div
+              className="relative overflow-hidden rounded-xl p-5 text-left shadow-md ring-1 ring-black/5"
+              style={{ backgroundColor: NAVY }}
+            >
+              <Code2
+                className="pointer-events-none absolute -bottom-1 -right-1 size-24 rotate-12 text-white/[0.07]"
+                strokeWidth={1}
+                aria-hidden
+              />
+              <h2 className="relative m-0 text-base font-bold text-white">Explore Sandbox</h2>
+              <p className="relative mt-2 text-sm leading-relaxed text-white/80">
+                You can already start testing our APIs in Sandbox mode while we review your live application.
+              </p>
+              <Link
+                href="https://docs.vestrapay.com"
+                className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-white underline-offset-2 hover:underline"
+              >
+                Open API Docs
+                <ExternalLink className="size-3.5 shrink-0 opacity-90" aria-hidden />
+              </Link>
             </div>
           </div>
 
           <Button
             asChild
-            className="mt-10 h-12 min-w-[14rem] rounded-lg border-0 bg-[#0a0c2c] px-8 text-sm font-semibold text-white shadow-md hover:brightness-110"
+            className="mt-10 h-12 min-w-[14rem] rounded-xl border-0 px-8 text-sm font-semibold text-white shadow-[0_10px_28px_-8px_rgba(8,8,58,0.45)] hover:brightness-110"
+            style={{ backgroundColor: NAVY }}
           >
             <Link href="/dashboard" className="inline-flex items-center justify-center gap-2 no-underline">
               Go to Dashboard
               <ArrowRight className="size-4" aria-hidden />
             </Link>
           </Button>
+
+          <p className="mt-8 text-center text-xs tracking-wide text-gray-400">Application Reference: #KYC-9928174</p>
         </div>
       </section>
-
-      <aside className="flex w-full flex-col gap-4 lg:max-w-sm">
-        <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <h2 className="m-0 text-[0.65rem] font-bold tracking-[0.14em] text-gray-500 uppercase">What to expect</h2>
-          <p className="mt-3 text-sm leading-relaxed text-gray-700">
-            Reviews are typically completed within a few business days. If you have questions about your submission, use
-            Support from the dashboard header.
-          </p>
-        </section>
-
-        <section className="rounded-xl bg-gradient-to-br from-[#0a0c2c] via-[#121a4a] to-[#1e2b6e] p-5 text-white shadow-md">
-          <h2 className="m-0 text-base font-semibold">Prepare for go-live</h2>
-          <p className="mt-2 text-sm leading-relaxed text-white/80">
-            While you wait, you can review integration guides and keep building in Sandbox. When you&apos;re ready for
-            production, you&apos;ll complete the final activation steps in the dashboard.
-          </p>
-          <Link
-            href="/dashboard/api-keys"
-            className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white underline-offset-2 hover:underline"
-          >
-            Open API keys
-            <ExternalLink className="size-3.5 shrink-0 opacity-90" aria-hidden />
-          </Link>
-        </section>
-
-        <section className="overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-r from-[#102a58] via-[#1e5b8f] to-[#6fb9d8] p-0 shadow-sm">
-          <div className="h-36 w-full bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.35),transparent_36%),radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.2),transparent_30%),linear-gradient(130deg,rgba(7,18,45,0.9),rgba(18,120,165,0.65))]" />
-        </section>
-      </aside>
     </div>
   );
 }

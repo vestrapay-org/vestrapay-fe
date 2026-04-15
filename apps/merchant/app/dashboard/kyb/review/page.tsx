@@ -7,7 +7,7 @@ import { KybVerificationSidebar } from "@/components/kyb/kyb-verification-sideba
 export default function KybReviewStepPage() {
   return (
     <>
-      <KybStepper currentStep={5} />
+      <KybStepper currentStep={4} />
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:items-start">
         <KybReviewContent />
         <KybVerificationSidebar variant="review" />
