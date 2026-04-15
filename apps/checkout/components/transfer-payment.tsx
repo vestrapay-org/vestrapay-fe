@@ -4,13 +4,12 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Copy, Check, Clock, Loader } from "@/components/icons";
 import { PaymentResult } from "@/components/payment-result";
 import { useClipboard } from "@/hooks/use-clipboard";
-import { usePaymentSocket } from "@/hooks/use-payment-socket";
-import { checkoutChargeBankTransfer } from "@/lib/api";
+import { useTransactionPoller } from "@/hooks/use-transaction-poller";
+import { checkoutChargeBankTransfer, verifyTransaction } from "@/lib/api";
 import type {
   PaymentComponentProps,
   ActivePaymentStatus,
   ChargeBankTransferData,
-  PaymentStatusEvent,
 } from "@/lib/types";
 
 const EXPIRY_SECONDS = 1800 as const;
@@ -181,19 +180,23 @@ export function TransferPayment({
 
   const { copied, copy } = useClipboard();
 
-  usePaymentSocket({
-    reference: state.socketReference,
-    onStatus: useCallback(
-      (event: PaymentStatusEvent): void => {
-        if (event.status === "success") {
-          setState((prev) => ({ ...prev, status: "success", socketReference: null }));
-          onPaymentSuccess?.(event.reference);
-        } else if (event.status === "failed") {
-          setState((prev) => ({ ...prev, status: "failed", socketReference: null }));
-          onPaymentFailed?.(event.reference);
+
+
+  useTransactionPoller({
+    reference: state.socketReference ?? "",
+    enabled: state.status === "idle" && state.socketReference !== null,
+    onSettled: useCallback(
+      (status: "success" | "failed"): void => {
+        if (state.socketReference !== null) {
+          setState((prev) => ({ ...prev, status, socketReference: null }));
+          if (status === "success") {
+            onPaymentSuccess?.(state.socketReference);
+          } else {
+            onPaymentFailed?.(state.socketReference);
+          }
         }
       },
-      [onPaymentSuccess, onPaymentFailed],
+      [onPaymentSuccess, onPaymentFailed, state.socketReference],
     ),
   });
 
@@ -233,10 +236,25 @@ export function TransferPayment({
     void handleGenerate();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleConfirm = useCallback((): void => {
+  const handleConfirm = useCallback(async (): Promise<void> => {
+    if (state.socketReference === null) return;
     setConfirming(true);
-    setTimeout((): void => setConfirming(false), 3000);
-  }, []);
+
+    try {
+      const res = await verifyTransaction(state.socketReference);
+      if (res.data.status === "success") {
+        setState((prev) => ({ ...prev, status: "success", socketReference: null }));
+        onPaymentSuccess?.(state.socketReference);
+      } else if (res.data.status === "failed") {
+        setState((prev) => ({ ...prev, status: "failed", socketReference: null }));
+        onPaymentFailed?.(state.socketReference);
+      }
+    } catch {
+      // Continue polling normally if verify request fails
+    } finally {
+      setTimeout((): void => setConfirming(false), 1000);
+    }
+  }, [state.socketReference, onPaymentSuccess, onPaymentFailed]);
 
   const handleClose = useCallback((): void => {
     setState({ status: "idle", details: null, socketReference: null, countdown: EXPIRY_SECONDS });
