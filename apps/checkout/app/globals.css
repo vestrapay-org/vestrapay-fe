@@ -74,6 +74,22 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  button:enabled,
+  input[type="button"]:enabled,
+  input[type="submit"]:enabled,
+  input[type="reset"]:enabled,
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  input[type="button"]:disabled,
+  input[type="submit"]:disabled,
+  input[type="reset"]:disabled,
+  [role="button"][aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
   input:focus-visible,
   select:focus-visible {
     outline: none;
