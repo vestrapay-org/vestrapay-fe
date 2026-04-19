@@ -73,7 +73,7 @@ function sanitizePhoneInput(value: string): string {
   return value.replace(/\D/g, "");
 }
 
-function RegisterMerchantForm() {
+export function RegisterMerchantForm() {
   const router = useRouter();
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
@@ -378,5 +378,3 @@ function RegisterMerchantForm() {
     </form>
   );
 }
-
-export { RegisterMerchantForm };

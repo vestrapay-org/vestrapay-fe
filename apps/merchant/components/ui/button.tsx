@@ -4,7 +4,7 @@ import { Slot } from "radix-ui";
 
 import { cn } from "../../lib/utils";
 
-const buttonVariants = cva("vp-btn", {
+export const buttonVariants = cva("vp-btn", {
   variants: {
     variant: {
       default: "vp-btn-default",
@@ -31,7 +31,7 @@ const buttonVariants = cva("vp-btn", {
   },
 });
 
-function Button({
+export function Button({
   className,
   variant = "default",
   size = "default",
@@ -53,5 +53,3 @@ function Button({
     />
   );
 }
-
-export { Button, buttonVariants };

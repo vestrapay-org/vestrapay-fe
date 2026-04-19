@@ -8,7 +8,7 @@ type KybVerificationSidebarProps = {
   variant?: "default" | "review";
 };
 
-function KybVerificationSidebar({ variant = "default" }: KybVerificationSidebarProps) {
+export function KybVerificationSidebar({ variant = "default" }: KybVerificationSidebarProps) {
   const isReview = variant === "review";
 
   return (
@@ -79,5 +79,3 @@ function KybVerificationSidebar({ variant = "default" }: KybVerificationSidebarP
     </aside>
   );
 }
-
-export { KybVerificationSidebar };

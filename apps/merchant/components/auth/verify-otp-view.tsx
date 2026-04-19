@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-function VerifyOtpView() {
+export function VerifyOtpView() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailParam = searchParams.get("email");
@@ -102,5 +102,3 @@ function VerifyOtpView() {
     </AuthPageLayout>
   );
 }
-
-export { VerifyOtpView };

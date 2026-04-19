@@ -76,7 +76,7 @@ function isValidWebsite(value: string): boolean {
   }
 }
 
-function KybBusinessInfoForm() {
+export function KybBusinessInfoForm() {
   const router = useRouter();
   const { business, setBusiness } = useKybWizard();
 
@@ -384,5 +384,3 @@ function KybBusinessInfoForm() {
     </section>
   );
 }
-
-export { KybBusinessInfoForm };

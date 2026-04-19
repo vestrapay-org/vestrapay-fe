@@ -385,7 +385,7 @@ function OwnerSection({
   );
 }
 
-function KybIdentityForm() {
+export function KybIdentityForm() {
   const router = useRouter();
   const { identity, setIdentity } = useKybWizard();
 
@@ -471,5 +471,3 @@ function KybIdentityForm() {
     </section>
   );
 }
-
-export { KybIdentityForm };

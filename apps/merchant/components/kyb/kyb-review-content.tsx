@@ -118,7 +118,7 @@ function OwnerReviewFields({ owner, heading }: { owner: KybOwnerFields; heading:
   );
 }
 
-function KybReviewContent() {
+export function KybReviewContent() {
   const router = useRouter();
   const { business, identity, settlement, resetAll } = useKybWizard();
 
@@ -146,11 +146,15 @@ function KybReviewContent() {
 
   const routingDigits = settlement.routingNumber.replace(/\D/g, "");
   const accountDigits = settlement.accountNumber.replace(/\D/g, "");
-  const hasCompleteSettlementStep =
-    settlement.bankName.trim().length > 1 &&
-    settlement.accountType.length > 0 &&
-    accountDigits.length >= 8 &&
-    routingDigits.length === 9;
+  const isNgnSettlement = settlement.settlementCurrency === "NGN";
+  const hasCompleteSettlementStep = isNgnSettlement
+    ? settlement.bankName.trim().length > 0 &&
+      accountDigits.length === 10 &&
+      settlement.accountHolderName.trim().length >= 2
+    : settlement.bankName.trim().length > 1 &&
+      settlement.accountType.length > 0 &&
+      accountDigits.length >= 8 &&
+      routingDigits.length === 9;
 
   const canSubmitApplication =
     hasCompleteBusinessStep && hasCompleteIdentityStep && hasCompleteSettlementStep;
@@ -204,10 +208,20 @@ function KybReviewContent() {
         </ReviewBlock>
 
         <ReviewBlock title="Settlement details" icon={CreditCard} editHref="/dashboard/kyb/settlement">
+          <FieldRow label="Settlement currency" value={settlement.settlementCurrency} />
           <FieldRow label="Bank name" value={settlement.bankName} />
-          <FieldRow label="Account type" value={settlement.accountType} />
-          <FieldRow label="Account number" value={maskAccountNumber(settlement.accountNumber)} />
-          <FieldRow label="Routing number" value={settlement.routingNumber} />
+          {isNgnSettlement ? (
+            <>
+              <FieldRow label="Account number (NUBAN)" value={maskAccountNumber(settlement.accountNumber)} />
+              <FieldRow label="Account holder name" value={settlement.accountHolderName} />
+            </>
+          ) : (
+            <>
+              <FieldRow label="Account type" value={settlement.accountType} />
+              <FieldRow label="Account number" value={maskAccountNumber(settlement.accountNumber)} />
+              <FieldRow label="Routing number" value={settlement.routingNumber} />
+            </>
+          )}
         </ReviewBlock>
       </div>
 
@@ -232,5 +246,3 @@ function KybReviewContent() {
     </section>
   );
 }
-
-export { KybReviewContent };

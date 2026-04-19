@@ -1,25 +1,43 @@
 "use client";
 
-import { Bell, HelpCircle } from "lucide-react";
+import { Bell, HelpCircle, Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
+import { useDashboardLayout } from "./dashboard-layout-context";
 import { getDashboardPageTitle } from "./nav-config";
 
-function DashboardTopNav() {
+export function DashboardTopNav() {
   const pathname = usePathname();
   const title = getDashboardPageTitle(pathname);
   const [environment, setEnvironment] = useState<"sandbox" | "live">("sandbox");
+  const { mobileNavOpen, setMobileNavOpen } = useDashboardLayout();
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-gray-200 bg-white px-4 md:px-6">
-      <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
-        <h1 className="m-0 truncate text-lg font-bold tracking-tight text-slate-900 md:text-xl">{title}</h1>
+    <header className="sticky top-0 z-20 flex h-16 min-w-0 shrink-0 items-center justify-between gap-2 border-b border-gray-200 bg-white px-3 sm:gap-4 sm:px-4 md:px-6">
+      <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3 md:gap-4">
+        <button
+          type="button"
+          className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm md:hidden"
+          aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileNavOpen}
+          onClick={() => setMobileNavOpen((o) => !o)}
+        >
+          {mobileNavOpen ? (
+            <X className="size-5" strokeWidth={2.25} />
+          ) : (
+            <Menu className="size-5" strokeWidth={2.25} />
+          )}
+        </button>
+
+        <h1 className="m-0 min-w-0 flex-1 truncate text-base font-bold tracking-tight text-slate-900 md:hidden">
+          {title}
+        </h1>
 
         <div
-          className="hidden shrink-0 items-center rounded-full border border-gray-200 bg-gray-100 p-0.5 sm:flex"
+          className="flex shrink-0 items-center rounded-full border border-gray-200 bg-gray-100 p-0.5"
           role="group"
           aria-label="Environment"
         >
@@ -27,7 +45,7 @@ function DashboardTopNav() {
             type="button"
             onClick={() => setEnvironment("sandbox")}
             className={cn(
-              "rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+              "rounded-full px-2 py-1.5 text-[0.65rem] font-semibold transition-colors sm:px-3 sm:text-xs",
               environment === "sandbox"
                 ? "bg-[var(--primary)] text-white shadow-sm"
                 : "text-gray-600 hover:text-gray-900",
@@ -39,7 +57,7 @@ function DashboardTopNav() {
             type="button"
             onClick={() => setEnvironment("live")}
             className={cn(
-              "rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+              "rounded-full px-2 py-1.5 text-[0.65rem] font-semibold transition-colors sm:px-3 sm:text-xs",
               environment === "live"
                 ? "bg-[var(--primary)] text-white shadow-sm"
                 : "text-gray-600 hover:text-gray-900",
@@ -75,5 +93,3 @@ function DashboardTopNav() {
     </header>
   );
 }
-
-export { DashboardTopNav };

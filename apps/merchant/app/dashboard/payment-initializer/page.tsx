@@ -1,7 +1,7 @@
 import React from "react";
 
-import { DashboardSectionPlaceholder } from "@/components/dashboard/dashboard-section-placeholder";
+import { PaymentInitializerView } from "@/components/payment-initializer/payment-initializer-view";
 
 export default function PaymentInitializerPage() {
-  return <DashboardSectionPlaceholder title="Payment initializer" />;
+  return <PaymentInitializerView />;
 }

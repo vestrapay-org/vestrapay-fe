@@ -47,7 +47,7 @@ const WEBHOOK_EVENTS = [
   },
 ] as const;
 
-function WebhooksView() {
+export function WebhooksView() {
   const [secretVisible, setSecretVisible] = useState(false);
   const [events, setEvents] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(WEBHOOK_EVENTS.map((e) => [e.id, e.defaultChecked])),
@@ -60,8 +60,8 @@ function WebhooksView() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex flex-col gap-4 rounded-lg border border-indigo-100 bg-[#E8EAF6] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between md:px-6">
+    <div className="mx-auto w-full min-w-0 max-w-7xl">
+      <div className="mb-6 flex min-w-0 flex-col gap-4 rounded-lg border border-indigo-100 bg-[#E8EAF6] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between md:px-6">
         <p className="text-sm text-[#0f1638]">
           <span className="mr-1 font-semibold">•</span>
           Live Mode is Active. Your applications are now receiving real-time event notifications.
@@ -71,8 +71,8 @@ function WebhooksView() {
         </span>
       </div>
 
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+      <div className="mb-8 flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <h2 className="text-2xl font-bold tracking-tight text-[#0f1638]">Webhook Endpoints</h2>
           <p className="mt-1 max-w-2xl text-sm text-gray-500">
             Configure where Vestrapay should send HTTP POST notifications for events in your account.
@@ -87,7 +87,7 @@ function WebhooksView() {
         </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-[1fr_320px]">
         <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm md:p-8">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4">
             <h3 className="text-lg font-bold text-[#0f1638]">Endpoint Configuration</h3>
@@ -180,7 +180,7 @@ function WebhooksView() {
             </button>
             <Button
               type="button"
-              className="h-11 min-w-[160px] rounded-lg border-0 bg-[#0f1638] text-sm font-semibold text-white hover:brightness-110"
+              className="h-11 w-full rounded-lg border-0 bg-[#0f1638] text-sm font-semibold text-white hover:brightness-110 sm:w-auto sm:min-w-[160px]"
             >
               Save Changes
             </Button>
@@ -238,5 +238,3 @@ function WebhooksView() {
     </div>
   );
 }
-
-export { WebhooksView };

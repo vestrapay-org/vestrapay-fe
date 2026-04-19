@@ -8,7 +8,7 @@ import { AuthPageLayout } from "@/layout/auth-page-layout";
 import { Button } from "../ui/button";
 import { checkPasswordRequirements, FloatingPasswordInput } from "./floating-password-input";
 
-function ResetPasswordView() {
+export function ResetPasswordView() {
   const router = useRouter();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -64,5 +64,3 @@ function ResetPasswordView() {
     </AuthPageLayout>
   );
 }
-
-export { ResetPasswordView };

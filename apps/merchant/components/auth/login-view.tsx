@@ -9,7 +9,7 @@ import { Button } from "../ui/button";
 import { FloatingPasswordInput } from "./floating-password-input";
 import { FloatingInput } from "./register-form-utils";
 
-function LoginView() {
+export function LoginView() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -68,5 +68,3 @@ function LoginView() {
     </AuthPageLayout>
   );
 }
-
-export { LoginView };

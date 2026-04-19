@@ -12,8 +12,8 @@ import {
 
 function SandboxBanner() {
   return (
-    <div className="mb-6 flex flex-col gap-4 rounded-lg border border-amber-200/80 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between md:px-5">
-      <div className="flex gap-3">
+    <div className="mb-6 flex min-w-0 flex-col gap-4 rounded-lg border border-amber-200/80 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between md:px-5">
+      <div className="flex min-w-0 gap-3">
         <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-700" aria-hidden />
         <p className="m-0 text-sm leading-relaxed text-amber-950 md:text-[0.9375rem]">
           You&apos;re in Sandbox Mode. Complete your KYB verification to start accepting real payments.
@@ -31,7 +31,7 @@ function SandboxBanner() {
 
 function StatCards() {
   return (
-    <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="mb-6 grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <p className="m-0 text-xs font-semibold uppercase tracking-wide text-gray-500">Total collections</p>
         <div className="mt-2 flex flex-wrap items-baseline gap-2">
@@ -78,8 +78,8 @@ function StatusBadge({ children, variant }: { children: React.ReactNode; variant
 
 function RecentTransactions() {
   return (
-    <section className="rounded-xl border border-gray-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+    <section className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="flex flex-col gap-2 border-b border-gray-100 px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4">
         <h2 className="m-0 text-base font-semibold text-slate-900">Recent transactions</h2>
         <Link
           href="/dashboard/transactions"
@@ -88,49 +88,84 @@ function RecentTransactions() {
           View all
         </Link>
       </div>
-      <div className="overflow-x-auto">
+      <div className="md:hidden divide-y divide-gray-100">
+        <div className="flex flex-col gap-2 px-3 py-3 sm:px-5">
+          <div className="flex items-start justify-between gap-2">
+            <span className="font-mono text-xs font-semibold text-gray-900">VP-SBX-001</span>
+            <StatusBadge variant="pending">Pending</StatusBadge>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <span className="font-medium text-gray-900">₦12,500.00</span>
+            <span className="text-gray-600">Card</span>
+          </div>
+          <p className="m-0 text-xs text-gray-600">Apr 10, 2026</p>
+        </div>
+        <div className="flex flex-col gap-2 px-3 py-3 sm:px-5">
+          <div className="flex items-start justify-between gap-2">
+            <span className="font-mono text-xs font-semibold text-gray-900">VP-SBX-002</span>
+            <StatusBadge variant="muted">Simulated</StatusBadge>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <span className="font-medium text-gray-900">₦4,000.00</span>
+            <span className="text-gray-600">Transfer</span>
+          </div>
+          <p className="m-0 text-xs text-gray-600">Apr 9, 2026</p>
+        </div>
+        <div className="flex flex-col gap-2 px-3 py-3 sm:px-5">
+          <div className="flex items-start justify-between gap-2">
+            <span className="font-mono text-xs font-semibold text-gray-900">VP-SBX-003</span>
+            <StatusBadge variant="muted">Abandoned</StatusBadge>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <span className="font-medium text-gray-900">₦1,200.00</span>
+            <span className="text-gray-600">USSD</span>
+          </div>
+          <p className="m-0 text-xs text-gray-600">Apr 8, 2026</p>
+        </div>
+      </div>
+      <div className="hidden overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch] touch-pan-x md:block">
         <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-gray-100 text-[0.65rem] font-bold uppercase tracking-wider text-gray-500">
-              <th className="px-5 py-3 font-semibold">Reference</th>
-              <th className="px-5 py-3 font-semibold">Amount</th>
-              <th className="px-5 py-3 font-semibold">Channel</th>
-              <th className="px-5 py-3 font-semibold">Status</th>
-              <th className="px-5 py-3 font-semibold">Date</th>
+              <th className="px-3 py-3 font-semibold sm:px-5">Reference</th>
+              <th className="px-3 py-3 font-semibold sm:px-5">Amount</th>
+              <th className="px-3 py-3 font-semibold sm:px-5">Channel</th>
+              <th className="px-3 py-3 font-semibold sm:px-5">Status</th>
+              <th className="px-3 py-3 font-semibold sm:px-5">Date</th>
             </tr>
           </thead>
           <tbody className="text-gray-800">
             <tr className="border-b border-gray-50">
-              <td className="px-5 py-3 font-mono text-xs">VP-SBX-001</td>
-              <td className="px-5 py-3 font-medium">₦12,500.00</td>
-              <td className="px-5 py-3 text-gray-600">Card</td>
-              <td className="px-5 py-3">
+              <td className="px-3 py-3 font-mono text-xs sm:px-5">VP-SBX-001</td>
+              <td className="px-3 py-3 font-medium sm:px-5">₦12,500.00</td>
+              <td className="px-3 py-3 text-gray-600 sm:px-5">Card</td>
+              <td className="px-3 py-3 sm:px-5">
                 <StatusBadge variant="pending">Pending</StatusBadge>
               </td>
-              <td className="px-5 py-3 text-gray-600">Apr 10, 2026</td>
+              <td className="px-3 py-3 text-gray-600 sm:px-5">Apr 10, 2026</td>
             </tr>
             <tr className="border-b border-gray-50">
-              <td className="px-5 py-3 font-mono text-xs">VP-SBX-002</td>
-              <td className="px-5 py-3 font-medium">₦4,000.00</td>
-              <td className="px-5 py-3 text-gray-600">Transfer</td>
-              <td className="px-5 py-3">
+              <td className="px-3 py-3 font-mono text-xs sm:px-5">VP-SBX-002</td>
+              <td className="px-3 py-3 font-medium sm:px-5">₦4,000.00</td>
+              <td className="px-3 py-3 text-gray-600 sm:px-5">Transfer</td>
+              <td className="px-3 py-3 sm:px-5">
                 <StatusBadge variant="muted">Simulated</StatusBadge>
               </td>
-              <td className="px-5 py-3 text-gray-600">Apr 9, 2026</td>
+              <td className="px-3 py-3 text-gray-600 sm:px-5">Apr 9, 2026</td>
             </tr>
             <tr>
-              <td className="px-5 py-3 font-mono text-xs">VP-SBX-003</td>
-              <td className="px-5 py-3 font-medium">₦1,200.00</td>
-              <td className="px-5 py-3 text-gray-600">USSD</td>
-              <td className="px-5 py-3">
+              <td className="px-3 py-3 font-mono text-xs sm:px-5">VP-SBX-003</td>
+              <td className="px-3 py-3 font-medium sm:px-5">₦1,200.00</td>
+              <td className="px-3 py-3 text-gray-600 sm:px-5">USSD</td>
+              <td className="px-3 py-3 sm:px-5">
                 <StatusBadge variant="muted">Abandoned</StatusBadge>
               </td>
-              <td className="px-5 py-3 text-gray-600">Apr 8, 2026</td>
+              <td className="px-3 py-3 text-gray-600 sm:px-5">Apr 8, 2026</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div className="flex flex-col items-center gap-2 border-t border-gray-100 px-5 py-10 text-center text-sm text-gray-500">
+      <div className="flex flex-col items-center gap-2 border-t border-gray-100 px-4 py-8 text-center text-sm text-gray-500 sm:px-5 sm:py-10">
         <CreditCard className="size-10 text-gray-300" aria-hidden />
         <p className="m-0 max-w-sm">
           No live transactions yet. Your sandbox transactions appear here.
@@ -196,7 +231,7 @@ function DeveloperSnapshot() {
         <Code2 className="size-4" aria-hidden />
         Developer snapshot
       </div>
-      <pre className="mt-3 overflow-x-auto rounded-lg bg-black/25 p-3 font-mono text-[0.7rem] leading-relaxed text-emerald-100/95 md:text-xs">
+      <pre className="mt-3 max-w-full overflow-x-auto rounded-lg bg-black/25 p-3 font-mono text-[0.7rem] leading-relaxed text-emerald-100/95 md:text-xs">
         <code>
           {`POST /v1/initialize\n`}
           {`{ "status": "200 OK" }\n`}
@@ -207,12 +242,12 @@ function DeveloperSnapshot() {
   );
 }
 
-function DashboardHome() {
+export function DashboardHome() {
   return (
     <>
       <SandboxBanner />
       <StatCards />
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)]">
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)]">
         <RecentTransactions />
         <div className="flex flex-col">
           <QuickActions />
@@ -222,5 +257,3 @@ function DashboardHome() {
     </>
   );
 }
-
-export { DashboardHome };

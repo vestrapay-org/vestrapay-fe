@@ -37,7 +37,7 @@ function FileTypeIcon({ fileName }: { fileName: string }) {
   return <File className="size-7 text-slate-600" strokeWidth={1.75} aria-hidden />;
 }
 
-function KybDocumentUploadField({
+export function KybDocumentUploadField({
   inputId,
   hint,
   accept = ".pdf,.jpg,.jpeg,.png",
@@ -182,5 +182,3 @@ function KybDocumentUploadField({
     </div>
   );
 }
-
-export { KybDocumentUploadField };

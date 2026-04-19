@@ -13,7 +13,7 @@ type StepIndicatorProps = {
   steps: Step[];
 };
 
-function StepIndicator({ currentStep, steps }: StepIndicatorProps) {
+export function StepIndicator({ currentStep, steps }: StepIndicatorProps) {
   return (
     <ol
       style={{
@@ -48,5 +48,3 @@ function StepIndicator({ currentStep, steps }: StepIndicatorProps) {
     </ol>
   );
 }
-
-export { StepIndicator };

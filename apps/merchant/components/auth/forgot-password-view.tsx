@@ -8,7 +8,7 @@ import { AuthPageLayout } from "@/layout/auth-page-layout";
 import { Button } from "../ui/button";
 import { FloatingInput } from "./register-form-utils";
 
-function ForgotPasswordView() {
+export function ForgotPasswordView() {
   const router = useRouter();
   const [email, setEmail] = useState("");
 
@@ -49,5 +49,3 @@ function ForgotPasswordView() {
     </AuthPageLayout>
   );
 }
-
-export { ForgotPasswordView };

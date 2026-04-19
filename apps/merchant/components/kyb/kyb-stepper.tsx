@@ -15,7 +15,7 @@ type KybStepperProps = {
   currentStep: number;
 };
 
-function KybStepper({ currentStep }: KybStepperProps) {
+export function KybStepper({ currentStep }: KybStepperProps) {
   return (
     <nav aria-label="KYB progress" className="mb-8">
       <div className="relative px-2 md:px-4">
@@ -66,5 +66,3 @@ function KybStepper({ currentStep }: KybStepperProps) {
     </nav>
   );
 }
-
-export { KybStepper };

@@ -1,10 +1,10 @@
 import type { KybOwnerFields } from "./kyb-wizard-context";
 
-function isValidEmail(value: string): boolean {
+export function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
-function isKybOwnerComplete(o: KybOwnerFields): boolean {
+export function isKybOwnerComplete(o: KybOwnerFields): boolean {
   return (
     o.legalFirstName.trim().length > 0 &&
     o.legalLastName.trim().length > 0 &&
@@ -23,5 +23,3 @@ function isKybOwnerComplete(o: KybOwnerFields): boolean {
     o.proofOfAddressFileName.length > 0
   );
 }
-
-export { isKybOwnerComplete, isValidEmail };

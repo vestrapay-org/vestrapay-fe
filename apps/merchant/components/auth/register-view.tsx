@@ -8,7 +8,7 @@ import { RegisterMerchantForm } from "./register-merchant-form";
 import { registrationSteps } from "./registration-steps";
 import { StepIndicator } from "./step-indicator";
 
-function RegisterView() {
+export function RegisterView() {
   return (
     <AuthPageLayout
       eyebrow="Step 1 of 2"
@@ -25,5 +25,3 @@ function RegisterView() {
     </AuthPageLayout>
   );
 }
-
-export { RegisterView };

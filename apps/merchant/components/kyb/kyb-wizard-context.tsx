@@ -46,13 +46,17 @@ export type KybIdentityData = {
 };
 
 export type KybSettlementData = {
+  /** ISO currency for settlement account (drives which fields are shown). */
+  settlementCurrency: string;
   bankName: string;
   accountType: string;
   accountNumber: string;
   routingNumber: string;
+  /** NGN / local-bank flows: account name (e.g. from bank verification). */
+  accountHolderName: string;
 };
 
-function createEmptyKybOwnerFields(): KybOwnerFields {
+export function createEmptyKybOwnerFields(): KybOwnerFields {
   return {
     legalFirstName: "",
     legalLastName: "",
@@ -74,7 +78,7 @@ function createEmptyKybOwnerFields(): KybOwnerFields {
   };
 }
 
-const emptyBusiness: KybBusinessData = {
+export const emptyBusiness: KybBusinessData = {
   legalBusinessName: "",
   businessType: "",
   businessRegistrationNumber: "",
@@ -92,16 +96,18 @@ const emptyBusiness: KybBusinessData = {
   businessProofOfAddressFileSize: "",
 };
 
-const emptyIdentity: KybIdentityData = {
+export const emptyIdentity: KybIdentityData = {
   primary: createEmptyKybOwnerFields(),
   additional: null,
 };
 
-const emptySettlement: KybSettlementData = {
+export const emptySettlement: KybSettlementData = {
+  settlementCurrency: "NGN",
   bankName: "",
   accountType: "",
   accountNumber: "",
   routingNumber: "",
+  accountHolderName: "",
 };
 
 type KybWizardContextValue = {
@@ -116,7 +122,7 @@ type KybWizardContextValue = {
 
 const KybWizardContext = createContext<KybWizardContextValue | null>(null);
 
-function KybWizardProvider({ children }: { children: React.ReactNode }) {
+export function KybWizardProvider({ children }: { children: React.ReactNode }) {
   const [business, setBusiness] = useState<KybBusinessData>(emptyBusiness);
   const [identity, setIdentity] = useState<KybIdentityData>(emptyIdentity);
   const [settlement, setSettlement] = useState<KybSettlementData>(emptySettlement);
@@ -143,19 +149,10 @@ function KybWizardProvider({ children }: { children: React.ReactNode }) {
   return <KybWizardContext.Provider value={value}>{children}</KybWizardContext.Provider>;
 }
 
-function useKybWizard() {
+export function useKybWizard() {
   const ctx = useContext(KybWizardContext);
   if (!ctx) {
     throw new Error("useKybWizard must be used within KybWizardProvider");
   }
   return ctx;
 }
-
-export {
-  KybWizardProvider,
-  useKybWizard,
-  emptyBusiness,
-  emptyIdentity,
-  emptySettlement,
-  createEmptyKybOwnerFields,
-};

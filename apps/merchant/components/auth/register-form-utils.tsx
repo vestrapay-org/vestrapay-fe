@@ -29,7 +29,7 @@ const countryOptions: CountryOption[] = (() => {
     .sort((a, b) => a.name.localeCompare(b.name));
 })();
 
-function FloatingInput({
+export function FloatingInput({
   id,
   name,
   label,
@@ -68,7 +68,7 @@ function FloatingInput({
   );
 }
 
-function FloatingCountrySelect() {
+export function FloatingCountrySelect() {
   return (
     <div className="group relative">
       <select
@@ -98,5 +98,3 @@ function FloatingCountrySelect() {
     </div>
   );
 }
-
-export { FloatingCountrySelect, FloatingInput };
