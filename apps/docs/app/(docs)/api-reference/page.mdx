@@ -1,0 +1,145 @@
+import { Callout } from "@/components/docs/callout";
+
+export const metadata = {
+  title: "API Reference Overview",
+  description: "Base URL, versioning, pagination, and response format.",
+};
+
+<div className="mb-12 max-w-3xl">
+  <h1 className="mb-4 text-3xl font-bold tracking-tight">API Reference</h1>
+  <div className="mb-10 text-lg text-muted-foreground">
+    This section documents every endpoint available in the Vestrapay REST API. All endpoints are grouped by resource type.
+  </div>
+</div>
+
+<div className="space-y-24">
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="base-url" className="mt-0 pt-0 text-xl font-semibold border-none">Base URL & Versioning</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      The `/v1` path prefix explicitly identifies the current stable Endpoint Data Model (EDM) version. Breaking changes increment the version number. We guarantee at least 12 months notice before deprecating any version.
+    </div>
+
+    <div className="not-prose my-6 w-full overflow-x-auto rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <table className="w-full text-left text-[13.5px]">
+        <thead>
+          <tr className="border-b" style={{ borderColor: 'var(--code-border)' }}>
+            <th className="px-4 py-3 font-medium border-l-[3px] border-l-primary text-foreground" style={{ background: 'var(--code-bg)' }}>HTTP Method</th>
+            <th className="px-4 py-3 font-medium text-foreground" style={{ background: 'var(--code-bg)' }}>Use</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y" style={{ background: 'var(--card)' }}>
+          <tr>
+            <td className="px-4 py-3 font-mono text-[12px] text-primary">GET</td>
+            <td className="px-4 py-3 text-muted-foreground">Retrieve a resource or list</td>
+          </tr>
+          <tr>
+            <td className="px-4 py-3 font-mono text-[12px] text-primary">POST</td>
+            <td className="px-4 py-3 text-muted-foreground">Create a resource</td>
+          </tr>
+          <tr>
+            <td className="px-4 py-3 font-mono text-[12px] text-primary">PUT / PATCH</td>
+            <td className="px-4 py-3 text-muted-foreground">Replace or partially update a resource</td>
+          </tr>
+          <tr>
+            <td className="px-4 py-3 font-mono text-[12px] text-primary">DELETE</td>
+            <td className="px-4 py-3 text-muted-foreground">Remove a resource</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">url</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`https://api.vestrapay.com/v1`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="pagination" className="mt-0 pt-0 text-xl font-semibold border-none">Pagination & Expanding</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      List endpoints return paginated results using cursor-based pagination. Fetch the next page by passing `after=<next_cursor>`. 
+      Additionally, use the `expand` parameter to inline related objects payload instead of their IDs.
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">cURL</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`curl "https://api.vestrapay.com/v1/payments?after=pay_xK92mPlw3Rz1&limit=20" \\
+  -H "Authorization: Bearer sk_test_your_key"`}
+          </code>
+        </pre>
+      </div>
+    </div>
+    
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <span className="mr-2 px-2 py-2 font-mono text-[11px]" style={{ color: 'var(--muted-foreground)' }}>200 OK</span>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`{
+  "data": [...],
+  "pagination": {
+    "has_more": true,
+    "next_cursor": "pay_xK92mPlw3Rz1",
+    "total_count": 150
+  }
+}`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="idempotency" className="mt-0 pt-0 text-xl font-semibold border-none">Idempotency</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Prevent duplicates by passing an `Idempotency-Key` header on any `POST` request. Vestrapay stores idempotency keys for 24 hours. A second request with the same key within that window returns the original response without executing the operation again.
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">cURL</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`curl -X POST "https://api.vestrapay.com/v1/payments" \\
+  -H "Authorization: Bearer sk_test_your_key" \\
+  -H "Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000" \\
+  -H "Content-Type: application/json" \\
+  -d '{"amount": 5000, "currency": "NGN"}'`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>

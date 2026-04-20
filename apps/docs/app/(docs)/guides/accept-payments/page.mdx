@@ -1,0 +1,136 @@
+import { Callout } from "@/components/docs/callout";
+import { CodeTabs } from "@/components/docs/code-tabs";
+
+export const metadata = {
+  title: "Accept Payments",
+  description: "End-to-end guide to accepting your first live payment with Vestrapay.",
+};
+
+<div className="mb-12 max-w-3xl">
+  <h1 className="mb-4 text-3xl font-bold tracking-tight">Accept Payments</h1>
+  <div className="mb-10 text-lg text-muted-foreground">
+    This guide walks through a complete, production-ready payment integration using the Vestrapay hosted checkout. By the end you will have a server endpoint that creates a payment, a frontend button that initiates checkout, and a webhook handler.
+  </div>
+</div>
+
+<div className="space-y-24">
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="install-sdk" className="mt-0 pt-0 text-xl font-semibold border-none">1. Install the SDK</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Add the SDK dependencies to your project and setup your basic environmental variables.
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">bash</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`npm install @vestrapay/node
+
+# .env
+VESTRAPAY_SECRET_KEY=sk_test_...
+VESTRAPAY_WEBHOOK_SECRET=whsec_...`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="create-payment" className="mt-0 pt-0 text-xl font-semibold border-none">2. Create a payment server-side</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Always create payments on your server. Never expose your secret key to the browser. Pass an array of items, calculate the total amount, and secure a secure response.
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <CodeTabs tabs={[
+      {
+        label: "Node.js",
+        lang: "javascript",
+        code: `import Vestrapay from "@vestrapay/node";
+
+const vestrapay = new Vestrapay(process.env.VESTRAPAY_SECRET_KEY);
+
+export async function createCheckoutSession(req, res) {
+  const payment = await vestrapay.payments.create({
+    amount: 5000,
+    currency: "NGN",
+    description: "Order for 1 item",
+    success_url: \`\${process.env.APP_URL}/orders/success\`,
+  });
+
+  res.json({ checkout_url: payment.checkout_url });
+}`
+      }
+    ]} />
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="checkout-button" className="mt-0 pt-0 text-xl font-semibold border-none">3. Add checkout button</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Trigger this via fetch from your frontend UI. 
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <CodeTabs tabs={[
+      {
+        label: "Browser JS",
+        lang: "javascript",
+        code: `async function startCheckout(cartItems) {
+  const res = await fetch("/api/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items: cartItems }),
+  });
+
+  const { checkout_url } = await res.json();
+  window.location.href = checkout_url;
+}`
+      }
+    ]} />
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="handle-webhook" className="mt-0 pt-0 text-xl font-semibold border-none">4. Handle the webhook</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      The webhook is the canonical payment confirmation. It fires even if the user closes their browser before the redirect returns.
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <CodeTabs tabs={[
+      {
+        label: "Node.js",
+        lang: "javascript",
+        code: `app.post("/webhooks/vestrapay", express.raw(), async (req, res) => {
+  const sig = req.headers["x-vestrapay-signature"];
+  const event = JSON.parse(req.body);
+
+  if (event.type === "payment.succeeded") {
+    await db.orders.markPaid(event.data.id);
+  }
+
+  res.status(200).json({ received: true });
+});`
+      }
+    ]} />
+  </div>
+</section>
+
+</div>

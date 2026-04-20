@@ -1,0 +1,128 @@
+import { Callout } from "@/components/docs/callout";
+import { CodeBlock } from "@/components/docs/code-block";
+
+export const metadata = {
+  title: "Introduction",
+  description: "Learn what Vestrapay is and how the payment platform works.",
+};
+
+<div className="mb-12 max-w-3xl">
+  <h1 className="mb-4 text-3xl font-bold tracking-tight">Introduction</h1>
+  <div className="mb-10 text-lg text-muted-foreground">
+    Vestrapay is a developer-first payments infrastructure built for Africa and beyond. It provides a unified API to accept payments, manage customers, initiate transfers, and respond to financial events in real time regardless of the payment channel.
+  </div>
+</div>
+
+<div className="space-y-24">
+
+{/* ── WHAT YOU CAN BUILD ── */}
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="what-you-can-build" className="mt-0 pt-0 text-xl font-semibold border-none">What you can build</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Vestrapay powers a wide range of use cases covering the full spectrum of online payments and integrations.
+    </div>
+
+    <ul className="text-[15px] text-muted-foreground space-y-2 pl-4 list-disc">
+      <li><strong>E-commerce checkouts</strong> – embed a branded hosted checkout or build your own UI using the API directly</li>
+      <li><strong>Subscription billing</strong> – create recurring charges against stored customer profiles</li>
+      <li><strong>Marketplace splits</strong> – route portions of each transaction to multiple sub-accounts</li>
+      <li><strong>Payouts</strong> – send money to bank accounts, mobile wallets, and cards</li>
+      <li><strong>Event-driven workflows</strong> – trigger backend logic when payments succeed, fail, or are disputed</li>
+    </ul>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="rounded-md border p-4 bg-card text-sm text-muted-foreground shadow-sm">
+      <h3 className="font-semibold text-foreground mb-2">Core Objects</h3>
+      <table className="w-full text-left mt-4 border-t">
+        <tbody>
+          <tr className="border-b"><td className="py-2"><code className="text-primary font-mono text-[12px]">Payment</code></td><td className="py-2 text-[13px]">A single charge attempt against a customer.</td></tr>
+          <tr className="border-b"><td className="py-2"><code className="text-primary font-mono text-[12px]">Customer</code></td><td className="py-2 text-[13px]">A stored profile with saved payment methods.</td></tr>
+          <tr className="border-b"><td className="py-2"><code className="text-primary font-mono text-[12px]">Transfer</code></td><td className="py-2 text-[13px]">A payout to a bank account or wallet.</td></tr>
+          <tr><td className="py-2"><code className="text-primary font-mono text-[12px]">Webhook</code></td><td className="py-2 text-[13px]">An HTTP callback triggered by events.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+{/* ── HOW IT WORKS ── */}
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="how-it-works" className="mt-0 pt-0 text-xl font-semibold border-none">How it works</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Every interaction with Vestrapay flows through a single REST API at `https://api.vestrapay.com/v2`. Here is the lifecycle of a typical online payment:
+    </div>
+    <ol className="text-[15px] text-muted-foreground space-y-2 pl-4 list-decimal marker:text-primary marker:font-semibold">
+      <li>Your server creates a <strong>Payment object</strong> via `POST /v2/payments`, supplying the amount and currency.</li>
+      <li>Vestrapay returns a `checkout_url`. You redirect your customer to that URL.</li>
+      <li>The customer completes payment through the Vestrapay-hosted checkout (card, bank transfer, USSD, or mobile money).</li>
+      <li>Vestrapay sends a <strong>webhook event</strong> (`payment.succeeded`) to your configured endpoint.</li>
+      <li>Your server fulfils the order.</li>
+    </ol>
+    <div className="text-[15px] text-muted-foreground mt-6">
+      You never handle raw card data. Vestrapay is PCI DSS Level 1 certified, so the compliance burden stays with us.
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <CodeBlock code={`{
+  "error": {
+    "code": "invalid_amount",
+    "message": "Amount must be a positive integer...",
+    "param": "amount",
+    "doc_url": "https://docs.vestrapay.com/errors"
+  }
+}`} lang="json" title="Standard Error Response" />
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+{/* ── ENVIRONMENTS ── */}
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="environments" className="mt-0 pt-0 text-xl font-semibold border-none">Environments</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Vestrapay provides two isolated environments. You control this securely via API keys.
+    </div>
+    <ul className="text-[15px] text-muted-foreground space-y-4 pl-4 list-disc">
+      <li>
+        <strong>Test Environment</strong><br/>
+        Use keys prefixed `sk_test_` / `pk_test_`. No real money moves. Use test card numbers to simulate scenarios.
+      </li>
+      <li>
+        <strong>Live Environment</strong><br/>
+        Use keys prefixed `sk_live_` / `pk_live_`. Real transactions. Requires a fully verified account.
+      </li>
+    </ul>
+    
+    <div className="mt-8">
+      <Callout type="tip" title="Start in test mode">
+        Everything covered in this documentation can be exercised in the test environment. Switch to live keys only when you are ready to accept real payments.
+      </Callout>
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="rounded-md border p-4 bg-card text-sm text-muted-foreground shadow-sm">
+      <h3 className="font-semibold text-foreground mb-3">API Conventions</h3>
+      
+      <div className="mb-2 text-[13px]"><strong className="text-foreground">Base URL</strong></div>
+      <code className="text-primary bg-primary/5 px-1 py-0.5 rounded textxs font-mono mb-4 block">https://api.vestrapay.com/v2</code>
+      
+      <div className="mb-2 text-[13px] mt-4"><strong className="text-foreground">Authentication</strong></div>
+      <code className="text-primary bg-primary/5 px-1 py-0.5 rounded text-xs font-mono mb-4 block">Authorization: Bearer sk_test_...</code>
+      
+      <div className="mb-2 text-[13px] mt-4"><strong className="text-foreground">Idempotency</strong></div>
+      <code className="text-primary bg-primary/5 px-1 py-0.5 rounded text-xs font-mono mb-4 block">Idempotency-Key: a0eebc99...</code>
+      
+      <div className="mb-2 text-[13px] mt-4"><strong className="text-foreground">Smallest Unit</strong></div>
+      <div className="text-[13px] leading-relaxed">
+        All monetary amounts are in the <strong>smallest currency unit</strong>. kobo for NGN, cents for USD. So `50000` equals ₦500.00.
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>

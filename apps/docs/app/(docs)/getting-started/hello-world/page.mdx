@@ -1,0 +1,100 @@
+import { Callout } from "@/components/docs/callout";
+import { CodeTabs } from "@/components/docs/code-tabs";
+import { CodeBlock } from "@/components/docs/code-block";
+
+export const metadata = {
+  title: "Hello World",
+  description: "The shortest path from a blank project to a working Vestrapay integration.",
+};
+
+<div className="mb-12 max-w-3xl">
+  <h1 className="mb-4 text-3xl font-bold tracking-tight">Hello World</h1>
+  <div className="mb-10 text-lg text-muted-foreground">
+    The absolute shortest path from a blank project to a working Vestrapay integration. See the checkout in action yourself!
+  </div>
+</div>
+
+<div className="space-y-24">
+
+{/* ── EXECUTE COMMAND ── */}
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="execute-command" className="mt-0 pt-0 text-xl font-semibold border-none">1. Run the curl</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Copy this single command into your terminal. Replace `sk_test_your_key` with your test secret key.
+    </div>
+
+    <h2 id="execute-command" className="mt-8 pt-0 text-xl font-semibold border-none">2. What just happened?</h2>
+    <ol className="text-[15px] text-muted-foreground space-y-2 pl-4 list-decimal marker:text-primary marker:font-semibold">
+      <li>You sent an HTTP `POST` with your API key in the `Authorization` header.</li>
+      <li>Vestrapay created a `Payment` object in your test account.</li>
+      <li>The response includes a hosted `checkout_url`. Vestrapay handles the payment UI for you.</li>
+      <li>After a customer pays, a `payment.succeeded` webhook fires to your registered endpoint.</li>
+    </ol>
+    
+    <div className="mt-8">
+      <Callout type="info" title="Important!">
+        The `amount` is always in the smallest currency unit. `100` kobo = ₦1.00. For a real product you would pass `500000` for ₦5,000.00.
+      </Callout>
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <CodeBlock code={`curl -X POST "https://api.vestrapay.com/v2/payments" \\
+  -H "Authorization: Bearer sk_test_your_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "amount": 100, 
+    "currency": "NGN", 
+    "description": "Hello, Vestrapay!"
+  }'`} lang="bash" title="Terminal" />
+  
+    <CodeBlock code={`{
+  "id": "pay_hello_world_example",
+  "object": "payment",
+  "amount": 100,
+  "currency": "NGN",
+  "status": "pending",
+  "description": "Hello, Vestrapay!",
+  "checkout_url": "https://checkout.vestrapay.com/pay...",
+  "created": 1745002345
+}`} lang="json" title="Response" />
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+{/* ── SDK APPROACH ── */}
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="sdk-approach" className="mt-0 pt-0 text-xl font-semibold border-none">3. With an SDK</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      If you prefer using Node.js instead of bare HTTP requests, our official NPM package handles everything with full TypeScript support.
+    </div>
+
+    <div className="mt-8">
+      <h3 className="font-semibold text-foreground mb-3 text-lg">Next Steps</h3>
+      <ul className="text-[15px] text-muted-foreground space-y-2 pl-4 list-disc">
+        <li><a href="/getting-started/quick-start" className="text-primary font-medium hover:underline">Quick Start</a>: A full five-minute walkthrough with webhooks.</li>
+        <li><a href="/authentication" className="text-primary font-medium hover:underline">Authentication</a>: Test vs live keys, key rotation.</li>
+        <li><a href="/api-reference/payments" className="text-primary font-medium hover:underline">Payments API</a>: Every field explained.</li>
+      </ul>
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <CodeBlock code={'npm install @vestrapay/node'} lang="bash" title="Terminal" />
+    <CodeBlock code={`import Vestrapay from "@vestrapay/node";
+
+const vp = new Vestrapay(process.env.VESTRAPAY_SECRET_KEY);
+
+const payment = await vp.payments.create({
+  amount: 100,
+  currency: "NGN",
+  description: "Hello, Vestrapay!",
+});
+
+console.log("Payment created:", payment.id);
+console.log("Send customer to:", payment.checkout_url);`} lang="javascript" title="Node.js" />
+  </div>
+</section>
+
+</div>

@@ -1,0 +1,141 @@
+import { Callout } from "@/components/docs/callout";
+
+export const metadata = {
+  title: "Handle Refunds",
+  description: "Issue full and partial refunds and handle refund lifecycle events.",
+};
+
+<div className="mb-12 max-w-3xl">
+  <h1 className="mb-4 text-3xl font-bold tracking-tight">Handle Refunds</h1>
+  <div className="mb-10 text-lg text-muted-foreground">
+    Refunds reverse all or part of a succeeded payment. The original amount is credited back to the customer's payment method, and Vestrapay notifies your server via webhook when the refund settles.
+  </div>
+</div>
+
+<div className="space-y-24">
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="full-refund" className="mt-0 pt-0 text-xl font-semibold border-none">Full refund</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Pass the payment ID and omit `amount` to refund the full charge.
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">cURL</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`curl -X POST "https://api.vestrapay.com/v2/payments/pay_k9mPlx3Rw7QzA4/refund" \\
+  -H "Authorization: Bearer sk_test_your_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{"reason": "customer_request"}'`}
+          </code>
+        </pre>
+      </div>
+    </div>
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">Node.js</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`const refund = await vestrapay.payments.refund("pay_k9mPlx3Rw7QzA4", {
+  reason: "customer_request",
+});`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="partial-refund" className="mt-0 pt-0 text-xl font-semibold border-none">Partial refund</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Pass `amount` in the smallest currency unit to refund only part of a payment. You can issue multiple partial refunds as long as the total does not exceed the original amount. The payment status becomes `partially_refunded` until fully reversed.
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">Node.js</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`// Refund ₦25.00 from a ₦50.00 payment
+const refund = await vestrapay.payments.refund("pay_k9mPlx3Rw7QzA4", {
+  amount: 2500,
+  reason: "customer_request",
+});`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="refund-status-webhooks" className="mt-0 pt-0 text-xl font-semibold border-none">Status & Webhooks</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Retrieve a refund's status directly or listen to webhook events to fulfill logic async.
+    </div>
+
+    <div className="mt-8">
+      <Callout type="info">
+        Vestrapay initiates the refund immediately, but the customer may not see the credit until their bank processes it.
+      </Callout>
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <span className="mr-2 px-2 py-2 font-mono text-[11px]" style={{ color: 'var(--muted-foreground)' }}>Status Check</span>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`const refund = await vestrapay.refunds.retrieve("ref_Jm4qKpX2Rn9Lw");
+console.log(refund.status); // "pending" | "succeeded" | "failed"`}
+          </code>
+        </pre>
+      </div>
+    </div>
+
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <span className="mr-2 px-2 py-2 font-mono text-[11px]" style={{ color: 'var(--muted-foreground)' }}>Webhook Events</span>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`case "refund.succeeded":
+  await db.orders.markRefunded({
+    paymentId: refund.payment,
+    refundId:  refund.id,
+    amount:    refund.amount,
+  });
+  break;
+
+case "refund.failed":
+  await alerts.send(\`Refund \${refund.id} failed.\`);
+  break;`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>

@@ -1,0 +1,92 @@
+import { Callout } from "@/components/docs/callout";
+
+export const metadata = {
+  title: "Recurring Billing",
+  description: "Set up subscriptions and scheduled charges with the Vestrapay API.",
+};
+
+<div className="mb-12 max-w-3xl">
+  <h1 className="mb-4 text-3xl font-bold tracking-tight">Recurring Billing</h1>
+  <div className="mb-10 text-lg text-muted-foreground">
+    Vestrapay does not manage subscription logic for you. instead it gives you the primitives to build exactly the billing model your product needs. The key ingredients are **Customer objects** and **server-side charge scheduling**.
+  </div>
+</div>
+
+<div className="space-y-24">
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="save-customer" className="mt-0 pt-0 text-xl font-semibold border-none">Save a customer on first payment</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      1. On the customer's first payment, Vestrapay stores their card details and returns a `Customer` ID.<br/>
+      2. For subsequent charges, you pass the same `Customer` ID when creating a payment.<br/>
+      3. Your server's scheduler triggers charges on the right date.
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">Node.js</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`const customer = await vestrapay.customers.create({
+  email: "ada@example.com",
+  name: "Ada Obi",
+  metadata: { plan: "pro", billing_cycle: "monthly" },
+});
+
+const payment = await vestrapay.payments.create({
+  amount: 9900,
+  currency: "NGN",
+  customer: customer.id,
+  description: "Pro plan",
+});`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="charge-renewal" className="mt-0 pt-0 text-xl font-semibold border-none">Charge on renewal</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      When the renewal date arrives, create a new payment against the same customer to charge their card securely.
+    </div>
+
+    <div className="mt-8">
+      <Callout type="info">
+        When a customer has a saved payment method, Vestrapay may complete the charge silently without requiring interaction.
+      </Callout>
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">Node.js</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`async function chargeSubscription(customerId, planAmount) {
+  return await vestrapay.payments.create({
+    amount: planAmount,
+    currency: "NGN",
+    customer: customerId,
+    description: "Monthly Renewal",
+    metadata: { subscription_renewal: "true" },
+  });
+}`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>

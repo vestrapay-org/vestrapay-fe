@@ -1,0 +1,90 @@
+import { Callout } from "@/components/docs/callout";
+
+export const metadata = {
+  title: "Authentication",
+  description: "API key types, environments, rotation, and security best practices.",
+};
+
+<div className="mb-12 max-w-3xl">
+  <h1 className="mb-4 text-3xl font-bold tracking-tight">Authentication</h1>
+  <div className="mb-10 text-lg text-muted-foreground">
+    All Vestrapay API requests are authenticated using API keys. Your account has four keys: a test secret key, a test publishable key, a live secret key, and a live publishable key.
+  </div>
+</div>
+
+<div className="space-y-24">
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="key-types" className="mt-0 pt-0 text-xl font-semibold border-none">Key types & Authentication</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Secret keys (`sk_test_`, `sk_live_`) have full API access and should be kept server-side only. Publishable keys (`pk_...`) are read-only and safe to expose in the browser. Always pass your secret key as a Bearer token in the `Authorization` header.
+    </div>
+    
+    <div className="mt-8">
+      <Callout type="error" title="Never expose your secret key">
+        If your secret key is compromised, an attacker can initiate payments, create customers, and read all transaction history. Rotate it immediately.
+      </Callout>
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">cURL</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`curl -H "Authorization: Bearer sk_test_your_key" \\
+     https://api.vestrapay.com/v2/payments`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div className="h-px bg-border my-12" />
+
+<section className="grid items-start gap-12 lg:grid-cols-2">
+  <div>
+    <h2 id="webhook-signatures" className="mt-0 pt-0 text-xl font-semibold border-none">Webhook signatures</h2>
+    <div className="text-[15px] text-muted-foreground mb-6">
+      Every webhook payload is signed with `HMAC-SHA256` so you can verify requests come from Vestrapay. The signature is provided via the `X-Vestrapay-Signature` header. Provide your webhook secret and write a constant-time comparison helper.
+    </div>
+
+    <div className="mt-6">
+      <Callout type="warning" title="Always use raw body">
+        Parse the raw request body, not the JSON-parsed version, when verifying signatures. JSON serialisation can change whitespace and key ordering, which invalidates hashes.
+      </Callout>
+    </div>
+  </div>
+  <div className="sticky top-24 lg:mt-0 mt-8 space-y-4">
+    <div className="not-prose group my-5 overflow-hidden rounded-md border" style={{ borderColor: 'var(--code-border)' }}>
+      <div className="flex items-end gap-0 border-b px-1" style={{ background: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <button className="border-b-2 px-3 py-2 font-mono text-[12px] font-medium transition-colors duration-150 border-foreground text-foreground">Node.js</button>
+      </div>
+      <div className="relative" style={{ background: 'var(--code-bg)' }}>
+        <pre className="p-4 text-[12.5px] leading-[1.75]" style={{ color: 'var(--muted-foreground)' }}>
+          <code>
+            {`import crypto from "node:crypto";
+
+function verifyWebhookSignature(payload, signature, secret) {
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(payload, "utf8")
+    .digest("hex");
+
+  const trusted  = Buffer.from(\`sha256=\${expected}\`, "utf8");
+  const received = Buffer.from(signature, "utf8");
+
+  return crypto.timingSafeEqual(trusted, received);
+}`}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>

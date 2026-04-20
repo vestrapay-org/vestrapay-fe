@@ -74,7 +74,10 @@ export function verifyTransaction(
 ): Promise<ApiResponse<VerifyTransactionData>> {
   return apiFetch<ApiResponse<VerifyTransactionData>>(
     `/api/v1/public/payment/verify/${encodeURIComponent(reference)}`,
-    { method: "GET" },
+    { 
+      method: "GET",
+      withApiKey: false,
+    },
   );
 }
 
