@@ -42,3 +42,6 @@ apps/merchant/.env.development
 
 # cursor
 .cursor/
+
+.env.development
+apps/merchant/.env.development
