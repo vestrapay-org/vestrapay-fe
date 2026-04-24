@@ -1,7 +1,17 @@
 "use client";
 
 import React from "react";
-import { Download, ExternalLink, Filter, Funnel, PlusCircle } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  Clock3,
+  Copy,
+  Download,
+  ExternalLink,
+  Funnel,
+  PlusCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -52,7 +62,7 @@ export function AccountsDashboardView() {
   ] as const;
 
   return (
-    <div className="-mx-3 -mt-1 min-w-0 bg-[#f6f7fb] px-3 pt-4 pb-8 sm:-mx-4 sm:px-4 md:-mx-6 md:px-6 md:pt-5">
+    <div className="-mx-3 -mt-1 min-w-0 bg-[#f4f5f8] px-3 pt-4 pb-8 sm:-mx-4 sm:px-4 md:-mx-6 md:px-6 md:pt-5">
       <RequestAccountUpdateModal
         open={updateModalOpen}
         onClose={() => setUpdateModalOpen(false)}
@@ -71,10 +81,10 @@ export function AccountsDashboardView() {
       <div className="mx-auto max-w-[1280px]">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
           <aside>
-            <p className="m-0 text-[10px] font-bold tracking-[0.2em] text-[#98a0b3] uppercase">
+            <p className="m-0 text-[10px] font-semibold tracking-[0.2em] text-[#9aa0b3] uppercase">
               Select Account
             </p>
-            <h2 className="m-0 mt-1 text-base leading-tight font-bold tracking-tight text-[#1c1e4d]">
+            <h2 className="m-0 mt-1 text-2xl leading-none font-semibold tracking-tight text-[#232851]">
               Ledger Portfolios
             </h2>
             <div className="mt-5 space-y-3">
@@ -86,16 +96,21 @@ export function AccountsDashboardView() {
                     type="button"
                     onClick={() => setSelectedAccountId(portfolio.id)}
                     className={cn(
-                      "w-full rounded-[14px] border px-3 py-3 text-left transition-all",
+                      "relative w-full rounded-[14px] border px-3 py-3 text-left transition-all",
                       selected
-                        ? "border-[#1f1d63] bg-[#1f1d63] text-white shadow-[0_8px_18px_-10px_rgba(31,29,99,0.8)]"
-                        : "border-[#e3e5ec] bg-[#f9fafc] text-[#272c47] hover:bg-white",
+                        ? "border-[#1f1d63] bg-[#1f1d63] text-white shadow-[0_8px_18px_-10px_rgba(31,29,99,0.72)]"
+                        : "border-[#E5E7EB] bg-[#FCFCFD] text-[#272c47] hover:bg-white",
                     )}
                   >
+                    {selected ? (
+                      <span className="absolute top-3 right-3 inline-flex size-4 items-center justify-center rounded-full bg-white/95 text-[#1f1d63]">
+                        <Check className="size-3.5" strokeWidth={2.8} />
+                      </span>
+                    ) : null}
                     <p
                       className={cn(
-                        "m-0 text-[10px] font-bold tracking-[0.18em] uppercase",
-                        selected ? "text-[#c9ccef]" : "text-[#9aa0b2]",
+                        "m-0 text-[10px] font-semibold tracking-[0.18em] uppercase",
+                        selected ? "text-[#c8cbeb]" : "text-[#A1A7BA]",
                       )}
                     >
                       {portfolio.tag}
@@ -103,8 +118,8 @@ export function AccountsDashboardView() {
                     <p className="m-0 mt-1 text-sm leading-tight font-semibold">{portfolio.name}</p>
                     <p
                       className={cn(
-                        "m-0 mt-1 text-base font-bold",
-                        selected ? "text-white" : "text-[#2b3152]",
+                        "m-0 mt-1 text-lg font-semibold",
+                        selected ? "text-white" : "text-[#2B3152]",
                       )}
                     >
                       {portfolio.amount}
@@ -116,43 +131,51 @@ export function AccountsDashboardView() {
             <button
               type="button"
               onClick={() => setCreateLedgerModalOpen(true)}
-              className="mt-4 flex h-[58px] w-full items-center justify-center gap-2 rounded-[12px] border border-dashed border-[#d3d8e4] bg-[#f9fafd] text-xs font-semibold tracking-[0.08em] text-[#7f879a] uppercase hover:bg-white"
+              className="mt-4 flex h-[58px] w-full items-center justify-center gap-2 rounded-[12px] border border-dashed border-[#D6DAE5] bg-transparent text-xs font-semibold tracking-[0.08em] text-[#7f879a] uppercase hover:bg-white"
             >
-              <PlusCircle className="size-4" strokeWidth={2.5} />
+              <PlusCircle className="size-4 text-[#A0A7BA]" strokeWidth={2.5} />
               Create New Account
             </button>
           </aside>
 
           <div className="space-y-5">
-            <section className="overflow-hidden rounded-[16px] border border-[#e3e6ef] bg-white">
+            <section className="overflow-hidden rounded-[12px] border border-[#E5E7EB] bg-white">
               <div className="flex flex-wrap items-start justify-between gap-5 border-b border-[#eceff6] px-5 pt-5 pb-6 sm:px-6">
                 <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 sm:gap-10">
                   <div>
-                    <p className="m-0 text-[10px] font-bold tracking-[0.2em] text-[#a1a7ba] uppercase">
+                    <p className="m-0 text-[10px] font-medium tracking-[0.2em] text-[#a1a7ba] uppercase">
                       Pending Payout
                     </p>
-                    <p className="m-0 mt-1 text-2xl leading-none font-bold tracking-tight text-[#1e2251] sm:text-3xl">
-                      ₦450,000.00
-                    </p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <p className="m-0 text-2xl leading-none font-semibold tracking-tight text-[#1e2251] sm:text-3xl">
+                        ₦450,000.00
+                      </p>
+                      <span className="inline-flex size-4 items-center justify-center rounded-full bg-[#FFF7ED] text-[#D97706]">
+                        <Clock3 className="size-2.5" />
+                      </span>
+                    </div>
                   </div>
                   <div>
-                    <p className="m-0 text-[10px] font-bold tracking-[0.2em] text-[#a1a7ba] uppercase">
+                    <p className="m-0 text-[10px] font-medium tracking-[0.2em] text-[#a1a7ba] uppercase">
                       Total Amount Settled
                     </p>
-                    <p className="m-0 mt-1 text-2xl leading-none font-bold tracking-tight text-[#1e2251] sm:text-3xl">
-                      ₦1,650,000.00
-                    </p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <p className="m-0 text-2xl leading-none font-semibold tracking-tight text-[#1e2251] sm:text-3xl">
+                        ₦1,650,000.00
+                      </p>
+                      <CheckCircle2 className="size-4 text-[#22A881]" />
+                    </div>
                   </div>
                 </div>
 
-                <div className="inline-flex rounded-full border border-[#e5e8f0] bg-[#f8f9fc] p-1">
+                <div className="inline-flex rounded-full border border-[#E5E7EB] bg-[#F8F9FC] p-1">
                   {(["NGN", "USD", "GBP"] as const).map((c) => (
                     <button
                       key={c}
                       type="button"
                       onClick={() => setCurrency(c)}
                       className={cn(
-                        "rounded-full px-3 py-1 text-[11px] font-bold tracking-[0.08em] transition-colors",
+                        "rounded-full px-3 py-1 text-[11px] font-semibold tracking-[0.08em] transition-colors",
                         currency === c
                           ? "bg-[#211f65] text-white"
                           : "text-[#8b91a3] hover:text-[#2f3560]",
@@ -173,15 +196,22 @@ export function AccountsDashboardView() {
                     <p className="m-0 text-[10px] font-bold tracking-[0.2em] text-[#a1a7ba] uppercase">
                       Account Number
                     </p>
-                    <p className="m-0 mt-1 text-lg leading-none font-bold text-[#2b3153]">
-                      9876543210
-                    </p>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      <p className="m-0 leading-none font-semibold text-[#2b3153]">9876543210</p>
+                      <button
+                        type="button"
+                        className="inline-flex size-5 items-center justify-center rounded text-[#B2B8C7] hover:bg-[#F3F4F6] hover:text-[#6B7280]"
+                        aria-label="Copy account number"
+                      >
+                        <Copy className="size-3.5" />
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <p className="m-0 text-[10px] font-bold tracking-[0.2em] text-[#a1a7ba] uppercase">
                       Account Name
                     </p>
-                    <p className="m-0 mt-1 text-lg leading-none font-bold text-[#2b3153]">
+                    <p className="m-0 mt-1 leading-none font-semibold text-[#2b3153]">
                       VESTRA TECH SOLUTIONS
                     </p>
                   </div>
@@ -189,7 +219,7 @@ export function AccountsDashboardView() {
                     <p className="m-0 text-[10px] font-bold tracking-[0.2em] text-[#a1a7ba] uppercase">
                       Bank Name
                     </p>
-                    <p className="m-0 mt-1 text-lg leading-none font-bold text-[#2b3153]">
+                    <p className="m-0 mt-1 leading-none font-semibold text-[#2b3153]">
                       Standard Trust Bank
                     </p>
                   </div>
@@ -205,10 +235,10 @@ export function AccountsDashboardView() {
               </div>
             </section>
 
-            <section className="overflow-hidden rounded-[16px] border border-[#e3e6ef] bg-white">
+            <section className="overflow-hidden rounded-[12px] border border-[#E5E7EB] bg-white">
               <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#eceff6] px-5 pt-5 pb-4 sm:px-6">
                 <div>
-                  <h3 className="m-0 text-xl leading-none font-bold text-[#1f2452]">
+                  <h3 className="m-0 text-2xl leading-none font-semibold tracking-tight text-[#1f2452]">
                     Settlement &amp; Activity
                   </h3>
                   <p className="m-0 mt-1 text-[14px] text-[#7a8094]">
@@ -252,7 +282,9 @@ export function AccountsDashboardView() {
                       <tr
                         key={row.reference}
                         className={cn(
+                          "relative",
                           index !== activityRows.length - 1 && "border-b border-[#eceff6]",
+                          index === 0 && "shadow-[inset_3px_0_0_0_#2B255E]",
                         )}
                       >
                         <td className="px-5 py-4 sm:px-6">
@@ -273,7 +305,12 @@ export function AccountsDashboardView() {
                         </td>
                         <td className="px-5 py-4 sm:px-6">
                           <span className="inline-flex items-center gap-2 text-[14px] font-bold text-[#333963]">
-                            <span className="size-2 rounded-full bg-[#272767]" />
+                            <span
+                              className={cn(
+                                "size-2 rounded-full",
+                                row.amountTone === "credit" ? "bg-[#22a881]" : "bg-[#272767]",
+                              )}
+                            />
                             {row.type}
                           </span>
                         </td>
@@ -294,10 +331,10 @@ export function AccountsDashboardView() {
               <div className="border-t border-[#eceff6] px-5 py-4 text-center sm:px-6">
                 <button
                   type="button"
-                  className="inline-flex items-center gap-2 text-[15px] font-bold text-[#20265c] hover:underline"
+                  className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[#20265c] hover:underline"
                 >
                   View all financial records
-                  <Filter className="size-4 rotate-90" />
+                  <ArrowRight className="size-4" />
                 </button>
               </div>
             </section>
