@@ -1,12 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
-import { ArrowRight, Check, ChevronDown, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Eye, EyeOff, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { extractApiErrorMessage } from "@/lib/extract-api-error-message";
+import { cn } from "@/lib/utils";
+import type { RegisterMerchantPayload } from "@/lib/api/types";
 
 const COUNTRIES = [
   "United States",
@@ -18,9 +21,6 @@ const COUNTRIES = [
   "Germany",
   "Other",
 ] as const;
-
-/** Demo: show “email already exists” for these addresses (case-insensitive). */
-const DUPLICATE_DEMO_EMAILS = new Set(["contact@business.com", "existing@vestrapay.com"]);
 
 type Checklist = {
   minLen: boolean;
@@ -75,6 +75,7 @@ function sanitizePhoneInput(value: string): string {
 
 export function RegisterMerchantForm() {
   const router = useRouter();
+  const { register, isRegistering } = useAuth();
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -85,7 +86,6 @@ export function RegisterMerchantForm() {
   const [pwVisible, setPwVisible] = useState(false);
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const checks = useMemo(() => evaluatePasswordChecks(password), [password]);
   const score = strengthScore(checks);
@@ -116,38 +116,53 @@ export function RegisterMerchantForm() {
   ]);
 
   function validateEmail(value: string) {
-    const v = value.trim().toLowerCase();
-    if (v && DUPLICATE_DEMO_EMAILS.has(v)) {
-      setEmailError("An account with this email already exists.");
+    const v = value.trim();
+    if (v && !isValidEmailFormat(v)) {
+      setEmailError("Enter a valid email address.");
     } else {
       setEmailError(null);
     }
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitError(null);
     const form = e.currentTarget;
     const fd = new FormData(form);
-    const email = String(fd.get("email") ?? "").trim();
-    validateEmail(email);
-    if (email && DUPLICATE_DEMO_EMAILS.has(email.toLowerCase())) {
+    const emailTrim = String(fd.get("email") ?? "").trim();
+    validateEmail(emailTrim);
+    if (emailTrim && !isValidEmailFormat(emailTrim)) {
+      toast.error("Enter a valid email address.");
       return;
     }
     if (!fd.get("terms")) {
-      setSubmitError("Please accept the Terms of Service and Privacy Policy.");
+      toast.error("Please accept the Terms of Service and Privacy Policy.");
       return;
     }
     if (password !== confirmPassword) {
-      setSubmitError("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
     if (score < 4) {
-      setSubmitError("Please meet all password requirements before continuing.");
+      toast.error("Please meet all password requirements before continuing.");
       return;
     }
-    const query = email ? `?email=${encodeURIComponent(email)}` : "";
-    router.push(`/register/verify-otp${query}`);
+    const payload: RegisterMerchantPayload = {
+      email: emailTrim,
+      password,
+      businessName: businessName.trim(),
+      phone: phone.trim(),
+      country,
+      agreedToTerms: termsAccepted,
+    };
+    try {
+      const response = await register(payload);
+      const verifiedEmail = response.data?.email ?? emailTrim;
+      toast.success("Account created. Verify your email to continue.");
+      const query = verifiedEmail ? `?email=${encodeURIComponent(verifiedEmail)}` : "";
+      router.push(`/register/verify-otp${query}`);
+    } catch (error) {
+      toast.error(extractApiErrorMessage(error));
+    }
   }
 
   return (
@@ -187,13 +202,7 @@ export function RegisterMerchantForm() {
         />
         {emailError ? (
           <p id="email-error" className="mt-1.5 text-sm text-red-600" role="alert">
-            {emailError}{" "}
-            <Link
-              href="/forgot-password"
-              className="font-semibold text-red-600 underline underline-offset-2"
-            >
-              Reset password?
-            </Link>
+            {emailError}
           </p>
         ) : null}
       </div>
@@ -225,7 +234,11 @@ export function RegisterMerchantForm() {
               required
               value={country}
               onChange={(e) => setCountry(e.target.value)}
-              className={cn(fieldInputClass, "h-11 appearance-none pr-10", country ? "text-gray-900" : "text-gray-400")}
+              className={cn(
+                fieldInputClass,
+                "h-11 appearance-none pr-10",
+                country ? "text-gray-900" : "text-gray-400",
+              )}
             >
               <option value="" disabled>
                 Select country
@@ -360,20 +373,23 @@ export function RegisterMerchantForm() {
         </label>
       </div>
 
-      {submitError ? (
-        <p className="m-0 text-sm text-red-600" role="alert">
-          {submitError}
-        </p>
-      ) : null}
-
       <Button
         type="submit"
         size="lg"
-        disabled={!canSubmit}
+        disabled={!canSubmit || isRegistering}
         className="mt-1 flex h-12 w-full items-center justify-center gap-2 rounded-md border-0 bg-[var(--primary)] text-sm font-semibold text-white shadow-[0_14px_30px_-14px_color-mix(in_oklch,var(--primary)_65%,transparent)] hover:brightness-105 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45"
       >
-        Create Account
-        <ArrowRight className="size-4" aria-hidden />
+        {isRegistering ? (
+          <>
+            <Loader2 className="size-4 shrink-0 animate-spin" aria-hidden />
+            Creating account…
+          </>
+        ) : (
+          <>
+            Create Account
+            <ArrowRight className="size-4" aria-hidden />
+          </>
+        )}
       </Button>
     </form>
   );

@@ -16,11 +16,11 @@ export function DashboardTopNav() {
   const { mobileNavOpen, setMobileNavOpen } = useDashboardLayout();
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 min-w-0 shrink-0 items-center justify-between gap-2 border-b border-gray-200 bg-white px-3 sm:gap-4 sm:px-4 md:px-6">
+    <header className="sticky top-0 z-20 flex h-16 min-w-0 shrink-0 items-center justify-between gap-2 border-b border-[var(--border)] bg-white px-3 sm:gap-4 sm:px-4 md:px-6">
       <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3 md:gap-4">
         <button
           type="button"
-          className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm md:hidden"
+          className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white text-[var(--foreground)] shadow-sm md:hidden"
           aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={mobileNavOpen}
           onClick={() => setMobileNavOpen((o) => !o)}
@@ -32,12 +32,12 @@ export function DashboardTopNav() {
           )}
         </button>
 
-        <h1 className="m-0 min-w-0 flex-1 truncate text-base font-bold tracking-tight text-slate-900 md:hidden">
+        <h1 className="m-0 min-w-0 flex-1 truncate text-base font-semibold tracking-tight text-[var(--foreground)] md:hidden">
           {title}
         </h1>
 
         <div
-          className="flex shrink-0 items-center rounded-full border border-gray-200 bg-gray-100 p-0.5"
+          className="flex shrink-0 items-center rounded-full border border-[var(--border)] bg-[var(--background)] p-0.5"
           role="group"
           aria-label="Environment"
         >
@@ -48,7 +48,7 @@ export function DashboardTopNav() {
               "rounded-full px-2 py-1.5 text-[0.65rem] font-semibold transition-colors sm:px-3 sm:text-xs",
               environment === "sandbox"
                 ? "bg-[var(--primary)] text-white shadow-sm"
-                : "text-gray-600 hover:text-gray-900",
+                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
             )}
           >
             Sandbox
@@ -60,7 +60,7 @@ export function DashboardTopNav() {
               "rounded-full px-2 py-1.5 text-[0.65rem] font-semibold transition-colors sm:px-3 sm:text-xs",
               environment === "live"
                 ? "bg-[var(--primary)] text-white shadow-sm"
-                : "text-gray-600 hover:text-gray-900",
+                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
             )}
           >
             Live
@@ -71,14 +71,14 @@ export function DashboardTopNav() {
       <div className="flex shrink-0 items-center gap-1 md:gap-2">
         <button
           type="button"
-          className="flex size-10 items-center justify-center rounded-lg border-0 bg-transparent text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          className="flex size-10 items-center justify-center rounded-lg border-0 bg-transparent text-[var(--muted-foreground)] transition-colors hover:bg-[var(--background)] hover:text-[var(--foreground)]"
           aria-label="Notifications"
         >
           <Bell className="size-5" />
         </button>
         <button
           type="button"
-          className="hidden items-center gap-2 rounded-lg border-0 bg-transparent px-2 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 sm:flex"
+          className="hidden items-center gap-2 rounded-lg border-0 bg-transparent px-2 py-2 text-sm font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--background)] hover:text-[var(--foreground)] sm:flex"
         >
           <HelpCircle className="size-5 shrink-0" aria-hidden />
           Support

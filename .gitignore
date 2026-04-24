@@ -29,6 +29,8 @@ pnpm-debug.log*
 # env files
 .env
 .env*.local
+.env.development
+apps/merchant/.env.development
 
 # vercel
 .vercel
@@ -37,3 +39,6 @@ pnpm-debug.log*
 *.tsbuildinfo
 
 .pnpm-store/
+
+# cursor
+.cursor/
