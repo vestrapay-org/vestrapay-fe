@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import React from "react";
+import { Toaster } from "sonner";
 import { cn } from "../lib/utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -18,7 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning lang="en" className={cn("font-sans", inter.variable)}>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        {children}
+        <Toaster richColors position="top-right" />
+      </body>
     </html>
   );
 }

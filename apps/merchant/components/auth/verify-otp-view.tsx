@@ -1,22 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { AuthPageLayout } from "@/layout/auth-page-layout";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { extractApiErrorMessage } from "@/lib/extract-api-error-message";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuthFlowStore } from "@/stores/auth-flow-store";
 
-function VerifyOtpView() {
+export function VerifyOtpView() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const emailParam = searchParams.get("email");
-  const emailDisplay = emailParam ? decodeURIComponent(emailParam) : null;
+  const registrationData = useAuthFlowStore((state) => state.registrationData);
+  const clearAuthFlow = useAuthFlowStore((state) => state.clear);
+  const { verify, isVerifying, resendVerificationOtp, isResendingOtp } = useAuth();
 
   const [otp, setOtp] = useState("");
-  const [secondsRemaining, setSecondsRemaining] = useState(10);
+  const [secondsRemaining, setSecondsRemaining] = useState(30);
 
   useEffect(() => {
     if (secondsRemaining <= 0) return;
@@ -26,42 +31,72 @@ function VerifyOtpView() {
     return () => window.clearInterval(timer);
   }, [secondsRemaining]);
 
-  function handleResend() {
-    setSecondsRemaining(30);
+  async function handleResend() {
+    const challengeToken = registrationData?.challengeToken ?? null;
+
+    if (!challengeToken) {
+      toast.error("Session expired. Please register again.");
+      router.push("/register");
+      return;
+    }
+
+    try {
+      await resendVerificationOtp(otp);
+      setSecondsRemaining(30);
+      toast.success("A new verification code has been sent.");
+    } catch (error) {
+      toast.error(extractApiErrorMessage(error));
+    }
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const digits = otp.replace(/\D/g, "");
     if (digits.length !== 6) {
+      toast.error("Enter a valid 6-digit OTP.");
       return;
     }
-    router.push("/dashboard");
+    console.log("registrationData", registrationData);
+    const challengeToken = registrationData?.challengeToken ?? null;
+    console.log("challengeToken", challengeToken);
+    // if (!challengeToken) {
+    //   toast.error("Session expired. Please register again.");
+    //   router.push("/register");
+    //   return;
+    // }
+
+    try {
+      await verify({ code: digits });
+      clearAuthFlow();
+      toast.success("Email verified successfully.");
+      router.push("/dashboard");
+    } catch (error) {
+      toast.error(extractApiErrorMessage(error));
+    }
   }
 
   return (
     <AuthPageLayout
       title="Verify your email"
       description={
-        emailDisplay ? (
-          <>
-            We sent a 6-digit code to{" "}
-            <span className="font-semibold text-slate-800">{emailDisplay}</span>. Enter it below to
-            confirm your address.
-          </>
-        ) : (
-          "We sent a 6-digit code to the email you used at registration. Enter it below to verify your address and continue to your dashboard."
-        )
+        "We sent a 6-digit code to your email. Enter it below to confirm your address and continue to your dashboard."
       }
       footer={
         secondsRemaining > 0 ? (
           <p className="m-0 text-sm text-gray-600">
             Resend code in{" "}
-            <span className="font-semibold text-slate-900">{secondsRemaining.toString().padStart(2, "0")}s</span>
+            <span className="font-semibold text-slate-900">
+              {secondsRemaining.toString().padStart(2, "0")}s
+            </span>
           </p>
         ) : (
-          <button type="button" onClick={handleResend}>
-            Resend code
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={isResendingOtp}
+            className="font-semibold text-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isResendingOtp ? "Resending..." : "Resend code"}
           </button>
         )
       }
@@ -92,15 +127,20 @@ function VerifyOtpView() {
           <Button
             size="lg"
             type="submit"
-            disabled={otp.replace(/\D/g, "").length !== 6}
+            disabled={otp.replace(/\D/g, "").length !== 6 || isVerifying}
             className="!text-white disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45"
           >
-            Verify and continue
+            {isVerifying ? (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+                Verifying...
+              </>
+            ) : (
+              "Verify and continue"
+            )}
           </Button>
         </div>
       </form>
     </AuthPageLayout>
   );
 }
-
-export { VerifyOtpView };

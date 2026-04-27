@@ -1,26 +1,17 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
-import { ArrowRight, Check, ChevronDown, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Check, Eye, EyeOff, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-
-const BUSINESS_CATEGORIES = [
-  "Retail & e-commerce",
-  "Food & hospitality",
-  "Professional services",
-  "Technology & SaaS",
-  "Healthcare",
-  "Education",
-  "Logistics & transport",
-  "Other",
-] as const;
-
-/** Demo: show “email already exists” for these addresses (case-insensitive). */
-const DUPLICATE_DEMO_EMAILS = new Set(["contact@business.com", "existing@vestrapay.com"]);
+import { FloatingSelect } from "@/components/auth/register-form-utils";
+import { useAuth } from "@/hooks/use-auth";
+import { extractApiErrorMessage } from "@/lib/extract-api-error-message";
+import { cn } from "@/lib/utils";
+import { useAuthFlowStore } from "@/stores/auth-flow-store";
+import type { RegisterMerchantData, RegisterMerchantPayload } from "@/lib/api/types";
 
 type Checklist = {
   minLen: boolean;
@@ -73,22 +64,44 @@ function sanitizePhoneInput(value: string): string {
   return value.replace(/\D/g, "");
 }
 
-function RegisterMerchantForm() {
+export function RegisterMerchantForm() {
   const router = useRouter();
+  const { register, isRegistering } = useAuth();
+  const setRegistrationData = useAuthFlowStore((state) => state.setRegistrationData);
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [businessCategory, setBusinessCategory] = useState("");
+  const [country, setCountry] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [pwVisible, setPwVisible] = useState(false);
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const checks = useMemo(() => evaluatePasswordChecks(password), [password]);
   const score = strengthScore(checks);
+  const countryOptions = useMemo(() => {
+    const fallbackCountryCodes = ["NG", "US", "GB", "CA", "DE", "FR", "IN", "KE", "ZA", "GH"];
+    const supportedValuesOf = Intl.supportedValuesOf as unknown as
+      | ((key: string) => string[])
+      | undefined;
+    let regionCodes = fallbackCountryCodes;
+
+    if (typeof supportedValuesOf === "function") {
+      try {
+        regionCodes = supportedValuesOf("region").filter((code) => code.length === 2);
+      } catch {
+        regionCodes = fallbackCountryCodes;
+      }
+    }
+
+    const displayNames = new Intl.DisplayNames(["en"], { type: "region" });
+
+    return regionCodes
+      .map((code) => displayNames.of(code) ?? code)
+      .sort((a, b) => a.localeCompare(b));
+  }, []);
 
   const canSubmit = useMemo(() => {
     const emailTrim = email.trim();
@@ -97,7 +110,7 @@ function RegisterMerchantForm() {
       isValidEmailFormat(emailTrim) &&
       !emailError &&
       phone.trim().length > 0 &&
-      businessCategory.length > 0 &&
+      country.length > 0 &&
       score === 4 &&
       password.length > 0 &&
       password === confirmPassword &&
@@ -107,7 +120,7 @@ function RegisterMerchantForm() {
     businessName,
     email,
     phone,
-    businessCategory,
+    country,
     password,
     confirmPassword,
     termsAccepted,
@@ -116,38 +129,52 @@ function RegisterMerchantForm() {
   ]);
 
   function validateEmail(value: string) {
-    const v = value.trim().toLowerCase();
-    if (v && DUPLICATE_DEMO_EMAILS.has(v)) {
-      setEmailError("An account with this email already exists.");
+    const v = value.trim();
+    if (v && !isValidEmailFormat(v)) {
+      setEmailError("Enter a valid email address.");
     } else {
       setEmailError(null);
     }
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitError(null);
     const form = e.currentTarget;
     const fd = new FormData(form);
-    const email = String(fd.get("email") ?? "").trim();
-    validateEmail(email);
-    if (email && DUPLICATE_DEMO_EMAILS.has(email.toLowerCase())) {
+    const emailTrim = String(fd.get("email") ?? "").trim();
+    validateEmail(emailTrim);
+    if (emailTrim && !isValidEmailFormat(emailTrim)) {
+      toast.error("Enter a valid email address.");
       return;
     }
     if (!fd.get("terms")) {
-      setSubmitError("Please accept the Terms of Service and Privacy Policy.");
+      toast.error("Please accept the Terms of Service and Privacy Policy.");
       return;
     }
     if (password !== confirmPassword) {
-      setSubmitError("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
     if (score < 4) {
-      setSubmitError("Please meet all password requirements before continuing.");
+      toast.error("Please meet all password requirements before continuing.");
       return;
     }
-    const query = email ? `?email=${encodeURIComponent(email)}` : "";
-    router.push(`/register/verify-otp${query}`);
+    const payload: RegisterMerchantPayload = {
+      email: emailTrim,
+      password,
+      businessName: businessName.trim(),
+      phone: phone.trim(),
+      country,
+      agreedToTerms: termsAccepted,
+    };
+    try {
+      const response: RegisterMerchantData = await register(payload);
+      setRegistrationData(response);
+      toast.success("Account created. Verify your email to continue.");
+      router.push("/register/verify-otp");
+    } catch (error) {
+      toast.error(extractApiErrorMessage(error));
+    }
   }
 
   return (
@@ -180,20 +207,16 @@ function RegisterMerchantForm() {
           onBlur={(e) => validateEmail(e.target.value)}
           onChange={(e) => {
             setEmail(e.target.value);
-            validateEmail(e.target.value);
+            if (emailError) {
+              setEmailError(null);
+            }
           }}
           aria-invalid={Boolean(emailError)}
           aria-describedby={emailError ? "email-error" : undefined}
         />
         {emailError ? (
           <p id="email-error" className="mt-1.5 text-sm text-red-600" role="alert">
-            {emailError}{" "}
-            <Link
-              href="/forgot-password"
-              className="font-semibold text-red-600 underline underline-offset-2"
-            >
-              Reset password?
-            </Link>
+            {emailError}
           </p>
         ) : null}
       </div>
@@ -217,34 +240,22 @@ function RegisterMerchantForm() {
           />
         </div>
         <div>
-          <FieldLabel>Business category</FieldLabel>
-          <div className="relative">
-            <select
-              id="businessCategory"
-              name="businessCategory"
-              required
-              value={businessCategory}
-              onChange={(e) => setBusinessCategory(e.target.value)}
-              className={cn(
-                fieldInputClass,
-                "h-11 appearance-none pr-10",
-                businessCategory ? "text-gray-900" : "text-gray-400",
-              )}
-            >
-              <option value="" disabled>
-                Select category
-              </option>
-              {BUSINESS_CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-500"
-              aria-hidden
-            />
-          </div>
+          <FieldLabel>Country</FieldLabel>
+          <FloatingSelect
+            id="country"
+            name="country"
+            label=""
+            placeholder="Select country"
+            options={countryOptions}
+            value={country}
+            onValueChange={setCountry}
+            triggerClassName={cn(
+              "h-11 rounded-md border-gray-300 bg-white px-3 py-2 text-sm shadow-sm",
+              "focus-visible:border-[var(--primary)] focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_oklch,var(--primary)_22%,transparent)]",
+              country ? "text-gray-900" : "text-gray-400",
+            )}
+            contentClassName="rounded-md border-gray-200"
+          />
         </div>
       </div>
 
@@ -364,23 +375,24 @@ function RegisterMerchantForm() {
         </label>
       </div>
 
-      {submitError ? (
-        <p className="m-0 text-sm text-red-600" role="alert">
-          {submitError}
-        </p>
-      ) : null}
-
       <Button
         type="submit"
         size="lg"
-        disabled={!canSubmit}
+        disabled={!canSubmit || isRegistering}
         className="mt-1 flex h-12 w-full items-center justify-center gap-2 rounded-md border-0 bg-[var(--primary)] text-sm font-semibold text-white shadow-[0_14px_30px_-14px_color-mix(in_oklch,var(--primary)_65%,transparent)] hover:brightness-105 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45"
       >
-        Create Account
-        <ArrowRight className="size-4" aria-hidden />
+        {isRegistering ? (
+          <>
+            <Loader2 className="size-4 shrink-0 animate-spin" aria-hidden />
+            Creating account…
+          </>
+        ) : (
+          <>
+            Create Account
+            <ArrowRight className="size-4" aria-hidden />
+          </>
+        )}
       </Button>
     </form>
   );
 }
-
-export { RegisterMerchantForm };

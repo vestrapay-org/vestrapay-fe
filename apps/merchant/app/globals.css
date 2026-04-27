@@ -9,21 +9,30 @@
 @source "../../../packages/ui/src";
 
 :root {
-  --primary: #221f58;
-  --primary-foreground: #221f58;
-  --ring: #221f58;
+  --primary: #0c0644;
+  --primary-foreground: #ffffff;
+  --ring: #0c0644;
+  --foreground: #111827;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+  --background: #f9fafb;
+  --destructive: #dc2626;
+  --success: #16a34a;
+  --warning: #d97706;
+  --info: #2563eb;
 }
 
 .dark {
-  --primary: #221f58;
-  --primary-foreground: #221f58;
-  --ring: #221f58;
+  --primary: #0c0644;
+  --primary-foreground: #ffffff;
+  --ring: #0c0644;
 }
 
 @layer base {
   body {
     min-height: 100vh;
-    background: #f4f4f5;
+    background: var(--background);
+    color: var(--foreground);
   }
 }
 
@@ -165,8 +174,10 @@
 
   .vp-label {
     color: var(--foreground);
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     line-height: 1.2;
     display: inline-block;
   }
@@ -176,7 +187,7 @@
     height: 2.8rem;
     border-radius: 0.75rem;
     border: 1px solid var(--input);
-    background: var(--background);
+    background: #fff;
     color: var(--foreground);
     padding: 0.6rem 0.75rem;
     font-size: 0.95rem;
@@ -249,13 +260,14 @@
     filter: brightness(0.95);
   }
   .vp-btn-outline {
-    background: var(--background);
+    background: #fff;
     color: var(--foreground);
     border-color: var(--border);
   }
   .vp-btn-secondary {
-    background: var(--secondary);
-    color: var(--secondary-foreground);
+    background: #fff;
+    color: var(--foreground);
+    border-color: var(--border);
   }
   .vp-btn-ghost {
     background: transparent;
@@ -263,13 +275,38 @@
     border-color: var(--border);
   }
   .vp-btn-destructive {
-    background: color-mix(in oklch, var(--destructive) 18%, transparent);
-    color: var(--destructive);
+    background: var(--destructive);
+    color: #fff;
   }
   .vp-btn-link {
     background: transparent;
     color: var(--primary);
     text-decoration: underline;
+  }
+
+  .vestra-display-lg {
+    font-size: 56px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .vestra-headline-lg {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  .vestra-title-md {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .vestra-body-md {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
   }
 }
 

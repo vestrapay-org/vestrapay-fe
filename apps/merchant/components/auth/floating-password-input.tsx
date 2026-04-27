@@ -25,7 +25,7 @@ export function checkPasswordRequirements(password: string): PasswordChecks {
   };
 }
 
-function PasswordRequirementsList({ checks }: { checks: PasswordChecks }) {
+export function PasswordRequirementsList({ checks }: { checks: PasswordChecks }) {
   const items: { key: keyof PasswordChecks; label: string }[] = [
     { key: "minLength", label: "More than 8 characters" },
     { key: "uppercase", label: "One uppercase letter" },
@@ -65,7 +65,7 @@ function PasswordRequirementsList({ checks }: { checks: PasswordChecks }) {
   );
 }
 
-function FloatingPasswordInput({
+export function FloatingPasswordInput({
   id,
   label,
   showRequirements = false,
@@ -105,11 +105,11 @@ function FloatingPasswordInput({
           autoComplete="new-password"
           value={value}
           onChange={handleChange}
-          className="peer h-14 w-full rounded-2xl border border-[#c5c1d5] bg-[#f8f7fc] px-4 pr-12 text-base font-medium text-[#322a4e] outline-none transition-all duration-300 ease-out placeholder:text-transparent focus:border-[color:var(--primary)] focus:ring-4 focus:ring-[color:color-mix(in_oklch,var(--primary)_18%,transparent)]"
+          className="peer h-14 w-full rounded-2xl border border-[#c5c1d5] bg-[#f8f7fc] px-4 pr-12 text-base font-medium text-[#322a4e] transition-all duration-300 ease-out outline-none placeholder:text-transparent focus:border-[color:var(--primary)] focus:ring-4 focus:ring-[color:color-mix(in_oklch,var(--primary)_18%,transparent)]"
         />
         <Label
           htmlFor={id}
-          className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded px-1 text-base font-medium text-[#8f88a6] transition-all duration-300 ease-out will-change-transform peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:scale-90 peer-focus:bg-[#f8f7fc] peer-focus:text-[color:var(--primary)] peer-[&:not(:placeholder-shown)]:top-0 peer-[&:not(:placeholder-shown)]:-translate-y-1/2 peer-[&:not(:placeholder-shown)]:scale-90 peer-[&:not(:placeholder-shown)]:bg-[#f8f7fc] peer-[&:not(:placeholder-shown)]:text-[color:var(--primary)]"
+          className="pointer-events-none absolute top-1/2 left-4 z-10 -translate-y-1/2 rounded px-1 text-xs font-medium text-[#8f88a6] transition-all duration-300 ease-out will-change-transform peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:scale-90 peer-focus:bg-[#f8f7fc] peer-focus:text-[color:var(--primary)] peer-[&:not(:placeholder-shown)]:top-0 peer-[&:not(:placeholder-shown)]:-translate-y-1/2 peer-[&:not(:placeholder-shown)]:scale-90 peer-[&:not(:placeholder-shown)]:bg-[#f8f7fc] peer-[&:not(:placeholder-shown)]:text-[color:var(--primary)]"
         >
           {label}
         </Label>
@@ -120,12 +120,14 @@ function FloatingPasswordInput({
           aria-label={visible ? "Hide password" : "Show password"}
           aria-pressed={visible}
         >
-          {visible ? <EyeOff className="size-[1.125rem]" aria-hidden /> : <Eye className="size-[1.125rem]" aria-hidden />}
+          {visible ? (
+            <EyeOff className="size-[1.125rem]" aria-hidden />
+          ) : (
+            <Eye className="size-[1.125rem]" aria-hidden />
+          )}
         </button>
       </div>
       {showRequirements ? <PasswordRequirementsList checks={checks} /> : null}
     </div>
   );
 }
-
-export { FloatingPasswordInput };

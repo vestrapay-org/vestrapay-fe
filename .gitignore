@@ -5,6 +5,10 @@ node_modules
 .next/
 out/
 
+# Accidental nested monorepo clone (e.g. wrong remote / pull into apps/merchant)
+apps/merchant/apps/
+apps/merchant/packages/
+
 # production
 build
 dist
@@ -25,9 +29,19 @@ pnpm-debug.log*
 # env files
 .env
 .env*.local
+.env.development
+apps/merchant/.env.development
 
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
+
+.pnpm-store/
+
+# cursor
+.cursor/
+
+.env.development
+apps/merchant/.env.development

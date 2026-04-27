@@ -48,6 +48,6 @@ export const config: Linter.Config[] = [
     },
   },
   {
-    ignores: ["dist/**", "node_modules/**", ".next/**", ".turbo/**"],
+    ignores: ["dist/**", "node_modules/**", "**/.next/**", ".turbo/**"],
   },
 ];

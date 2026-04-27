@@ -1,17 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useMemo, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { AuthPageLayout } from "@/layout/auth-page-layout";
+import { useAuth } from "@/hooks/use-auth";
+import { extractApiErrorMessage } from "@/lib/extract-api-error-message";
 import { Button } from "../ui/button";
 import { checkPasswordRequirements, FloatingPasswordInput } from "./floating-password-input";
 
-function ResetPasswordView() {
+export function ResetPasswordView() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { resetPasswordMerchant, isResettingPassword } = useAuth();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    const tokenFromQuery = searchParams.get("token");
+    if (!tokenFromQuery) return;
+    setToken(tokenFromQuery);
+    router.replace(pathname);
+  }, [pathname, router, searchParams]);
 
   const policyMet = useMemo(() => {
     const checks = checkPasswordRequirements(newPassword);
@@ -22,10 +37,23 @@ function ResetPasswordView() {
     return policyMet && newPassword.length > 0 && newPassword === confirmPassword && confirmPassword.length > 0;
   }, [policyMet, newPassword, confirmPassword]);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!canSubmit) return;
-    router.push("/login");
+    if (!token) {
+      toast.error("Reset token is missing or invalid.");
+      return;
+    }
+    try {
+      await resetPasswordMerchant({
+        token,
+        newPassword,
+      });
+      toast.success("Password updated successfully.");
+      router.push("/login");
+    } catch (error) {
+      toast.error(extractApiErrorMessage(error));
+    }
   }
 
   return (
@@ -55,14 +83,19 @@ function ResetPasswordView() {
 
         <Button
           type="submit"
-          disabled={!canSubmit}
+          disabled={!canSubmit || !token || isResettingPassword}
           className="text-primary-foreground mt-1 h-12 w-full rounded-md bg-[var(--primary)] text-sm font-semibold text-white shadow-[0_14px_30px_-14px_color-mix(in_oklch,var(--primary)_65%,transparent)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45"
         >
-          Update password
+          {isResettingPassword ? (
+            <>
+              <Loader2 className="size-4 shrink-0 animate-spin" aria-hidden />
+              Updating...
+            </>
+          ) : (
+            "Update password"
+          )}
         </Button>
       </form>
     </AuthPageLayout>
   );
 }
-
-export { ResetPasswordView };

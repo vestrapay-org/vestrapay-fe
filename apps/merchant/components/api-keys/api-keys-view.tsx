@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-function ApiKeysView() {
+export function ApiKeysView() {
   const [secretVisible, setSecretVisible] = useState(false);
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto w-full min-w-0 max-w-5xl">
       <div className="mb-8 flex gap-4 rounded-lg border border-amber-200/80 bg-amber-50/90 p-4 md:p-5">
         <div className="flex size-11 shrink-0 items-center justify-center rounded-md bg-amber-100">
           <AlertTriangle className="size-6 text-amber-600" strokeWidth={2} />
@@ -184,5 +184,3 @@ function ApiKeysView() {
     </div>
   );
 }
-
-export { ApiKeysView };

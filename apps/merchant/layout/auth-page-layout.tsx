@@ -3,7 +3,7 @@ import React, { type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-type AuthPageLayoutProps = {
+export type AuthPageLayoutProps = {
   title: string;
   description?: ReactNode;
   eyebrow?: ReactNode;
@@ -13,7 +13,7 @@ type AuthPageLayoutProps = {
   className?: string;
 };
 
-function VestrapayBrand() {
+export function VestrapayBrand() {
   return (
     <div className="inline-flex items-center gap-2.5">
       <div
@@ -34,7 +34,7 @@ function VestrapayBrand() {
   );
 }
 
-function AuthPageLayout({
+export function AuthPageLayout({
   title,
   description,
   eyebrow,
@@ -86,5 +86,3 @@ function AuthPageLayout({
     </main>
   );
 }
-
-export { AuthPageLayout, type AuthPageLayoutProps, VestrapayBrand };

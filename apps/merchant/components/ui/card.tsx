@@ -2,17 +2,17 @@ import * as React from "react";
 
 import { cn } from "../../lib/utils";
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+export function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card"
-      className={cn("bg-card text-card-foreground rounded-2xl border shadow-sm", className)}
+      className={cn("rounded-2xl border border-[var(--border)] bg-white text-[var(--foreground)] shadow-sm", className)}
       {...props}
     />
   );
 }
 
-function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
+export function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-header"
@@ -22,28 +22,26 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<"h3">) {
+export function CardTitle({ className, ...props }: React.ComponentProps<"h3">) {
   return (
     <h3
       data-slot="card-title"
-      className={cn("text-xl font-semibold tracking-tight", className)}
+      className={cn("vestra-title-md text-[var(--foreground)]", className)}
       {...props}
     />
   );
 }
 
-function CardDescription({ className, ...props }: React.ComponentProps<"p">) {
+export function CardDescription({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p
       data-slot="card-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("vestra-body-md text-[var(--muted-foreground)]", className)}
       {...props}
     />
   );
 }
 
-function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+export function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return <div data-slot="card-content" className={cn("p-6 pt-0", className)} {...props} />;
 }
-
-export { Card, CardContent, CardDescription, CardHeader, CardTitle };

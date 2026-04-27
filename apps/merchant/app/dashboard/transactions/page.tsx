@@ -1,7 +1,7 @@
 import React from "react";
 
-import { DashboardSectionPlaceholder } from "@/components/dashboard/dashboard-section-placeholder";
+import { TransactionsView } from "@/components/transactions/transactions-view";
 
 export default function TransactionsPage() {
-  return <DashboardSectionPlaceholder title="Transactions" />;
+  return <TransactionsView initialTab="collections" />;
 }

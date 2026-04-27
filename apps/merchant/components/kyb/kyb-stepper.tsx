@@ -8,15 +8,14 @@ const STEPS = [
   { id: 1, label: "Business info", href: "/dashboard/kyb" },
   { id: 2, label: "Identity", href: "/dashboard/kyb/identity" },
   { id: 3, label: "Settlement", href: "/dashboard/kyb/settlement" },
-  { id: 4, label: "Documents", href: "/dashboard/kyb/documents" },
-  { id: 5, label: "Review", href: "/dashboard/kyb/review" },
+  { id: 4, label: "Review", href: "/dashboard/kyb/review" },
 ] as const;
 
 type KybStepperProps = {
   currentStep: number;
 };
 
-function KybStepper({ currentStep }: KybStepperProps) {
+export function KybStepper({ currentStep }: KybStepperProps) {
   return (
     <nav aria-label="KYB progress" className="mb-8">
       <div className="relative px-2 md:px-4">
@@ -67,5 +66,3 @@ function KybStepper({ currentStep }: KybStepperProps) {
     </nav>
   );
 }
-
-export { KybStepper };

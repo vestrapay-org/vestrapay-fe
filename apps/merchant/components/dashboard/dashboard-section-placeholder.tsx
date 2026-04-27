@@ -6,12 +6,12 @@ type DashboardSectionPlaceholderProps = {
   description?: string;
 };
 
-function DashboardSectionPlaceholder({
+export function DashboardSectionPlaceholder({
   title,
   description = "This section is a placeholder until it is connected to your backend.",
 }: DashboardSectionPlaceholderProps) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-8">
       <h2 className="m-0 text-xl font-semibold tracking-tight text-slate-900">{title}</h2>
       <p className="mt-2 max-w-lg text-sm leading-relaxed text-gray-600">{description}</p>
       <Link
@@ -23,5 +23,3 @@ function DashboardSectionPlaceholder({
     </div>
   );
 }
-
-export { DashboardSectionPlaceholder };

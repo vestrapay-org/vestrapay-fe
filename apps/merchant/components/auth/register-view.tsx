@@ -8,12 +8,12 @@ import { RegisterMerchantForm } from "./register-merchant-form";
 import { registrationSteps } from "./registration-steps";
 import { StepIndicator } from "./step-indicator";
 
-function RegisterView() {
+export function RegisterView() {
   return (
     <AuthPageLayout
       eyebrow="Step 1 of 2"
       title="Create your account"
-      description="Start accepting payments in minutes with our sovereign ledger."
+      description="Start accepting payments in minutes with Vestrapay."
       steps={<StepIndicator currentStep={1} steps={registrationSteps} />}
       footer={
         <p className="m-0">
@@ -25,5 +25,3 @@ function RegisterView() {
     </AuthPageLayout>
   );
 }
-
-export { RegisterView };
