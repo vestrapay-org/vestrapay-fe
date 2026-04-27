@@ -14,9 +14,11 @@ import {
   Search,
 } from "lucide-react";
 import React from "react";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 
+import { CreatePaymentLinkModal } from "./create-payment-link-modal";
 import { buildPaymentLinksDataset, PAYMENT_LINKS_TOTAL } from "./payment-links-mock-data";
 import type { PaymentLinkCurrency, PaymentLinkFeeBearer, PaymentLinkRow, PaymentLinkStatus } from "./payment-links-types";
 
@@ -192,6 +194,7 @@ export function PaymentLinksView() {
   const fullRows = React.useMemo(() => buildPaymentLinksDataset(PAYMENT_LINKS_TOTAL), []);
   const [page, setPage] = React.useState(1);
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
+  const [createPaymentLinkOpen, setCreatePaymentLinkOpen] = React.useState(false);
 
   const totalPages = Math.max(1, Math.ceil(PAYMENT_LINKS_TOTAL / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -208,6 +211,13 @@ export function PaymentLinksView() {
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-[1500px]">
+      <CreatePaymentLinkModal
+        open={createPaymentLinkOpen}
+        onClose={() => setCreatePaymentLinkOpen(false)}
+        onSubmit={(payload) => {
+          toast.success(`Payment link created for ${payload.title}.`);
+        }}
+      />
       <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h1 className="m-0 text-2xl font-bold tracking-tight text-[#0b0c45] md:text-[1.75rem]">
@@ -219,6 +229,7 @@ export function PaymentLinksView() {
         </div>
         <button
           type="button"
+          onClick={() => setCreatePaymentLinkOpen(true)}
           className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-lg border-0 bg-[#0b0c45] px-5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-95 sm:w-auto"
         >
           + Create Payment Link

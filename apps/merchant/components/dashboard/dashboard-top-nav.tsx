@@ -1,19 +1,28 @@
 "use client";
 
-import { Bell, HelpCircle, Menu, X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { Bell, HelpCircle, LogOut, Menu, User, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 import { useDashboardLayout } from "./dashboard-layout-context";
 import { getDashboardPageTitle } from "./nav-config";
 
 export function DashboardTopNav() {
+  const router = useRouter();
   const pathname = usePathname();
   const title = getDashboardPageTitle(pathname);
   const [environment, setEnvironment] = useState<"sandbox" | "live">("sandbox");
   const { mobileNavOpen, setMobileNavOpen } = useDashboardLayout();
+  const { logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-20 flex h-16 min-w-0 shrink-0 items-center justify-between gap-2 border-b border-[var(--border)] bg-white px-3 sm:gap-4 sm:px-4 md:px-6">
@@ -83,12 +92,37 @@ export function DashboardTopNav() {
           <HelpCircle className="size-5 shrink-0" aria-hidden />
           Support
         </button>
-        <div
-          className="ml-1 flex size-9 shrink-0 items-center justify-center rounded-full bg-[color:color-mix(in_oklch,var(--primary)_85%,white)] text-xs font-bold text-[var(--primary)]"
-          aria-hidden
-        >
-          VP
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="ml-1 flex size-9 shrink-0 items-center justify-center rounded-full bg-[color:color-mix(in_oklch,var(--primary)_85%,white)] text-xs font-bold text-white transition-opacity hover:opacity-90"
+              aria-label="Open user menu"
+            >
+              VP
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuItem
+              onClick={() => router.push("/dashboard/settings/profile")}
+              className="cursor-pointer"
+            >
+              <User className="size-4" />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              className="cursor-pointer"
+              onClick={() => {
+                logout();
+                router.push("/login");
+              }}
+            >
+              <LogOut className="size-4" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

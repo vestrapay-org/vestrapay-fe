@@ -109,7 +109,7 @@ export function FloatingPasswordInput({
         />
         <Label
           htmlFor={id}
-          className="pointer-events-none absolute top-1/2 left-4 z-10 -translate-y-1/2 rounded px-1 text-base font-medium text-[#8f88a6] transition-all duration-300 ease-out will-change-transform peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:scale-90 peer-focus:bg-[#f8f7fc] peer-focus:text-[color:var(--primary)] peer-[&:not(:placeholder-shown)]:top-0 peer-[&:not(:placeholder-shown)]:-translate-y-1/2 peer-[&:not(:placeholder-shown)]:scale-90 peer-[&:not(:placeholder-shown)]:bg-[#f8f7fc] peer-[&:not(:placeholder-shown)]:text-[color:var(--primary)]"
+          className="pointer-events-none absolute top-1/2 left-4 z-10 -translate-y-1/2 rounded px-1 text-xs font-medium text-[#8f88a6] transition-all duration-300 ease-out will-change-transform peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:scale-90 peer-focus:bg-[#f8f7fc] peer-focus:text-[color:var(--primary)] peer-[&:not(:placeholder-shown)]:top-0 peer-[&:not(:placeholder-shown)]:-translate-y-1/2 peer-[&:not(:placeholder-shown)]:scale-90 peer-[&:not(:placeholder-shown)]:bg-[#f8f7fc] peer-[&:not(:placeholder-shown)]:text-[color:var(--primary)]"
         >
           {label}
         </Label>

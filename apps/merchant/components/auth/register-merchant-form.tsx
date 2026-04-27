@@ -2,25 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
-import { ArrowRight, Check, ChevronDown, Eye, EyeOff, Loader2 } from "lucide-react";
+import { ArrowRight, Check, Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { FloatingSelect } from "@/components/auth/register-form-utils";
 import { useAuth } from "@/hooks/use-auth";
 import { extractApiErrorMessage } from "@/lib/extract-api-error-message";
 import { cn } from "@/lib/utils";
-import type { RegisterMerchantPayload } from "@/lib/api/types";
-
-const COUNTRIES = [
-  "United States",
-  "United Kingdom",
-  "Nigeria",
-  "Kenya",
-  "South Africa",
-  "Canada",
-  "Germany",
-  "Other",
-] as const;
+import { useAuthFlowStore } from "@/stores/auth-flow-store";
+import type { RegisterMerchantData, RegisterMerchantPayload } from "@/lib/api/types";
 
 type Checklist = {
   minLen: boolean;
@@ -76,6 +67,7 @@ function sanitizePhoneInput(value: string): string {
 export function RegisterMerchantForm() {
   const router = useRouter();
   const { register, isRegistering } = useAuth();
+  const setRegistrationData = useAuthFlowStore((state) => state.setRegistrationData);
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -89,6 +81,27 @@ export function RegisterMerchantForm() {
 
   const checks = useMemo(() => evaluatePasswordChecks(password), [password]);
   const score = strengthScore(checks);
+  const countryOptions = useMemo(() => {
+    const fallbackCountryCodes = ["NG", "US", "GB", "CA", "DE", "FR", "IN", "KE", "ZA", "GH"];
+    const supportedValuesOf = Intl.supportedValuesOf as unknown as
+      | ((key: string) => string[])
+      | undefined;
+    let regionCodes = fallbackCountryCodes;
+
+    if (typeof supportedValuesOf === "function") {
+      try {
+        regionCodes = supportedValuesOf("region").filter((code) => code.length === 2);
+      } catch {
+        regionCodes = fallbackCountryCodes;
+      }
+    }
+
+    const displayNames = new Intl.DisplayNames(["en"], { type: "region" });
+
+    return regionCodes
+      .map((code) => displayNames.of(code) ?? code)
+      .sort((a, b) => a.localeCompare(b));
+  }, []);
 
   const canSubmit = useMemo(() => {
     const emailTrim = email.trim();
@@ -155,11 +168,10 @@ export function RegisterMerchantForm() {
       agreedToTerms: termsAccepted,
     };
     try {
-      const response = await register(payload);
-      const verifiedEmail = response.data?.email ?? emailTrim;
+      const response: RegisterMerchantData = await register(payload);
+      setRegistrationData(response);
       toast.success("Account created. Verify your email to continue.");
-      const query = verifiedEmail ? `?email=${encodeURIComponent(verifiedEmail)}` : "";
-      router.push(`/register/verify-otp${query}`);
+      router.push("/register/verify-otp");
     } catch (error) {
       toast.error(extractApiErrorMessage(error));
     }
@@ -195,7 +207,9 @@ export function RegisterMerchantForm() {
           onBlur={(e) => validateEmail(e.target.value)}
           onChange={(e) => {
             setEmail(e.target.value);
-            validateEmail(e.target.value);
+            if (emailError) {
+              setEmailError(null);
+            }
           }}
           aria-invalid={Boolean(emailError)}
           aria-describedby={emailError ? "email-error" : undefined}
@@ -227,33 +241,21 @@ export function RegisterMerchantForm() {
         </div>
         <div>
           <FieldLabel>Country</FieldLabel>
-          <div className="relative">
-            <select
-              id="country"
-              name="country"
-              required
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className={cn(
-                fieldInputClass,
-                "h-11 appearance-none pr-10",
-                country ? "text-gray-900" : "text-gray-400",
-              )}
-            >
-              <option value="" disabled>
-                Select country
-              </option>
-              {COUNTRIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-500"
-              aria-hidden
-            />
-          </div>
+          <FloatingSelect
+            id="country"
+            name="country"
+            label=""
+            placeholder="Select country"
+            options={countryOptions}
+            value={country}
+            onValueChange={setCountry}
+            triggerClassName={cn(
+              "h-11 rounded-md border-gray-300 bg-white px-3 py-2 text-sm shadow-sm",
+              "focus-visible:border-[var(--primary)] focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_oklch,var(--primary)_22%,transparent)]",
+              country ? "text-gray-900" : "text-gray-400",
+            )}
+            contentClassName="rounded-md border-gray-200"
+          />
         </div>
       </div>
 

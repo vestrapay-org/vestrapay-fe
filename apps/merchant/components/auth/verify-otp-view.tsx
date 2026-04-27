@@ -1,23 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { AuthPageLayout } from "@/layout/auth-page-layout";
 import { Button } from "@/components/ui/button";
-import { MERCHANT_REGISTRATION_CHALLENGE_TOKEN_KEY, useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { extractApiErrorMessage } from "@/lib/extract-api-error-message";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuthFlowStore } from "@/stores/auth-flow-store";
 
 export function VerifyOtpView() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const emailParam = searchParams.get("email");
-  const emailDisplay = emailParam ? decodeURIComponent(emailParam) : null;
+  const registrationData = useAuthFlowStore((state) => state.registrationData);
+  const clearAuthFlow = useAuthFlowStore((state) => state.clear);
   const { verify, isVerifying, resendVerificationOtp, isResendingOtp } = useAuth();
 
   const [otp, setOtp] = useState("");
@@ -32,14 +32,7 @@ export function VerifyOtpView() {
   }, [secondsRemaining]);
 
   async function handleResend() {
-    if (!emailDisplay) {
-      toast.error("Email is missing. Please restart registration.");
-      return;
-    }
-    const challengeToken =
-      typeof window !== "undefined"
-        ? sessionStorage.getItem(MERCHANT_REGISTRATION_CHALLENGE_TOKEN_KEY)
-        : null;
+    const challengeToken = registrationData?.challengeToken ?? null;
 
     if (!challengeToken) {
       toast.error("Session expired. Please register again.");
@@ -63,22 +56,18 @@ export function VerifyOtpView() {
       toast.error("Enter a valid 6-digit OTP.");
       return;
     }
-    if (!emailDisplay) {
-      toast.error("Email is missing. Please restart registration.");
-      return;
-    }
-    const challengeToken =
-      typeof window !== "undefined"
-        ? sessionStorage.getItem(MERCHANT_REGISTRATION_CHALLENGE_TOKEN_KEY)
-        : null;
-    if (!challengeToken) {
-      toast.error("Session expired. Please register again.");
-      router.push("/register");
-      return;
-    }
+    console.log("registrationData", registrationData);
+    const challengeToken = registrationData?.challengeToken ?? null;
+    console.log("challengeToken", challengeToken);
+    // if (!challengeToken) {
+    //   toast.error("Session expired. Please register again.");
+    //   router.push("/register");
+    //   return;
+    // }
 
     try {
       await verify({ code: digits });
+      clearAuthFlow();
       toast.success("Email verified successfully.");
       router.push("/dashboard");
     } catch (error) {

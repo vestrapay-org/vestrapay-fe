@@ -13,7 +13,7 @@ export function RegisterView() {
     <AuthPageLayout
       eyebrow="Step 1 of 2"
       title="Create your account"
-      description="Start accepting payments in minutes with our sovereign ledger."
+      description="Start accepting payments in minutes with Vestrapay."
       steps={<StepIndicator currentStep={1} steps={registrationSteps} />}
       footer={
         <p className="m-0">

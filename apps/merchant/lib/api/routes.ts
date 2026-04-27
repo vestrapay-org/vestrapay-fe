@@ -17,6 +17,9 @@ export const Routes = {
   [MODULE_ROUTE.AUTH]: {
     VERIFY_EMAIL: `${AUTH}/verify-email`,
     RESEND_OTP: `${AUTH}/resend-otp`,
+    LOGIN: `${AUTH}/login`,
+    FORGOT_PASSWORD: `${AUTH}/forgot-password`,
+    RESET_PASSWORD: `${AUTH}/reset-password`,
   },
 } as const;
 

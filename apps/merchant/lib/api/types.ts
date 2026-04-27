@@ -36,9 +36,38 @@ export interface MerchantDashboard {
 
 export interface VerifyEmailPayload {
   code: string;
+  challengeToken?: string;
 }
 
 export interface VerifyEmailData {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface ResendOtpPayload {
+  method: string;
+  challengeToken?: string;
+}
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface LoginData {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ForgotPasswordData {
+  message: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
 }
